@@ -1,0 +1,8 @@
+<#if licenseFirst??>
+${licenseFirst}
+</#if>
+${licensePrefix}Project develop by João Vitor Barbosa Tavares
+${licensePrefix} ${licensePrefix}
+<#if licenseLast??>
+${licenseLast}
+</#if>

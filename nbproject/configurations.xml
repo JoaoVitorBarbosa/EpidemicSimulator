@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="100">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <logicalFolder name="HeaderFiles"
+                   displayName="Header Files"
+                   projectFiles="true">
+      <itemPath>EpidemicAnalysis.h</itemPath>
+      <itemPath>Event.h</itemPath>
+      <itemPath>EventProcessor.h</itemPath>
+      <itemPath>GraphGenerator.h</itemPath>
+      <itemPath>ManipulaGrafo.h</itemPath>
+      <itemPath>Params.h</itemPath>
+      <itemPath>RandomGenerator.h</itemPath>
+      <itemPath>RandomWalk.h</itemPath>
+      <itemPath>Simulator.h</itemPath>
+      <itemPath>Vertex.h</itemPath>
+    </logicalFolder>
+    <logicalFolder name="ResourceFiles"
+                   displayName="Resource Files"
+                   projectFiles="true">
+    </logicalFolder>
+    <logicalFolder name="SourceFiles"
+                   displayName="Source Files"
+                   projectFiles="true">
+      <itemPath>EpidemicAnalysis.cpp</itemPath>
+      <itemPath>ManipulaGrafo.cpp</itemPath>
+      <itemPath>RandomGenerator.cpp</itemPath>
+      <itemPath>RandomWalk.cpp</itemPath>
+      <itemPath>Simulator.cpp</itemPath>
+      <itemPath>Vertex.cpp</itemPath>
+      <itemPath>main.cpp</itemPath>
+    </logicalFolder>
+    <logicalFolder name="TestFiles"
+                   displayName="Test Files"
+                   projectFiles="false"
+                   kind="TEST_LOGICAL_FOLDER">
+    </logicalFolder>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>Makefile</itemPath>
+    </logicalFolder>
+    <itemPath>Data/Params.json</itemPath>
+  </logicalFolder>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Debug" type="1">
+      <toolsSet>
+        <compilerSet>default</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <compileType>
+        <ccTool>
+          <standard>11</standard>
+          <commandlineTool>g++</commandlineTool>
+          <incDir>
+            <pElem>/usr/include</pElem>
+            <pElem>../../../../Desenvolvimento/gnuplot-iostream</pElem>
+            <pElem>../ThirdParties/JSON</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <linkerAddLib>
+            <pElem>/usr/lib/x86_64-linux-gnu</pElem>
+          </linkerAddLib>
+          <linkerLibItems>
+            <linkerLibLibItem>boost_filesystem</linkerLibLibItem>
+            <linkerLibLibItem>boost_iostreams</linkerLibLibItem>
+            <linkerLibLibItem>boost_system</linkerLibLibItem>
+          </linkerLibItems>
+        </linkerTool>
+      </compileType>
+      <item path="Data/Params.json" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="EpidemicAnalysis.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="EpidemicAnalysis.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="Event.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="EventProcessor.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="GraphGenerator.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ManipulaGrafo.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="ManipulaGrafo.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="Params.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="RandomGenerator.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="RandomGenerator.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="RandomWalk.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="RandomWalk.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="Simulator.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="Simulator.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="Vertex.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="Vertex.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="main.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+    </conf>
+    <conf name="Release" type="1">
+      <toolsSet>
+        <compilerSet>default</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <compileType>
+        <cTool>
+          <developmentMode>5</developmentMode>
+        </cTool>
+        <ccTool>
+          <developmentMode>5</developmentMode>
+        </ccTool>
+        <fortranCompilerTool>
+          <developmentMode>5</developmentMode>
+        </fortranCompilerTool>
+        <asmTool>
+          <developmentMode>5</developmentMode>
+        </asmTool>
+      </compileType>
+      <item path="Data/Params.json" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="EpidemicAnalysis.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="EpidemicAnalysis.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="Event.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="EventProcessor.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="GraphGenerator.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ManipulaGrafo.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="ManipulaGrafo.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="Params.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="RandomGenerator.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="RandomGenerator.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="RandomWalk.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="RandomWalk.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="Simulator.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="Simulator.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="Vertex.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="Vertex.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="main.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+    </conf>
+  </confs>
+</configurationDescriptor>
