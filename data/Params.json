@@ -1,12 +1,12 @@
 {
     "GraphParam": {
-                "Type": 1,
+                "Type": 3,
                 "path": "/home/joao/Mestrado/Simulador/Source Code/data/click250.txt",
                 "n": 250
              },
     "RwParam": {
             "k": 50,
-            "ki": 10,
+            "ki": 25,
             "lambda": 1,
             "gama": 0.1,
             "tau": 0.5,
@@ -14,6 +14,6 @@
         },
     "p": 0.5,
     "Rounds": 1,
-    "Time": 1000,
+    "Time": 100000,
     "OutputDir": "/home/joao/Mestrado/Simulador/Source Code/data/output"
 }

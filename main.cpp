@@ -11,6 +11,8 @@
  * Created on 8 de Maio de 2017, 18:29
  */
 
+// git: https://bitbucket.org/JV1992/epidemicsimulator
+
 #include <iostream>
 #include "RandomGenerator.h"
 #include "Vertex.h"
@@ -21,6 +23,7 @@
 #include "json.hpp"
 #include "GraphGenerator.h"
 #include "EpidemicAnalysis.h"
+#include <map>
 
 using namespace std;
 
@@ -165,7 +168,8 @@ int main(int argc, char** argv) {
         ep.params = params;
         ep.infectedsGraphic(sim.fileNameInfectInterval);
         ep.randomWalkStateTimeSeries(sim.fileNameNumberRandomWalkStates);
-        ep.analysisAll(sim.outputDir, sim.k);
+        
+        ep.analysisStateTime(sim.randomWalks.at(0)->fileNameParmResult);
 
     } catch (exception& e) {
         std::cerr << "Error while parsing parameter file: . " << argv[1] << " Erro: " << e.what() << std::endl;

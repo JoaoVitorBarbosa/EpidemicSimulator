@@ -64,6 +64,8 @@ struct History {
 };
 
 class RandomWalk {
+public:
+
     // vetex where rw is located
     int vertex;
     // code of rw
@@ -75,11 +77,10 @@ class RandomWalk {
     double tau;
     State state;
     bool infectEvent; 
-   std::string fileName;
+    std::string fileName;
     std::string fileNameParmResult;
     std::string outputDir;
 
-public:
     // store time intervals that rw spend in infected state
     boost::accumulators::accumulator_set<double, boost::accumulators::features<boost::accumulators::tag::mean, boost::accumulators::tag::median, boost::accumulators::tag::variance>> intervalsWalking;
     boost::accumulators::accumulator_set<double, boost::accumulators::features<boost::accumulators::tag::mean, boost::accumulators::tag::median, boost::accumulators::tag::variance>> intervalsInfected;
