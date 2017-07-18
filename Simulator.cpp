@@ -49,7 +49,7 @@ void Simulator::fillVertices(Params params) {
     }
 }
 
-void Simulator::setupRandomWalks(RwParam rwParams) {
+void Simulator::setupRandomWalks(RwParam rwParams) { 
     std::map<int, bool> rwToInf;
     for (int j = 0; j < rwParams.ki; j++) {
         int rw = rg.uniform(0, rwParams.ki);
