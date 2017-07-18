@@ -37,12 +37,14 @@ enum GraphType{
     File = 0,
     Ring = 1,
     Torus = 2,
-    Clique = 3
+    Clique = 3, 
+    Bipartite = 4
 };
 
 struct GraphParam {
-    int Type; // 0-File, 1-Ring, 2-Torus, 3-Clique
+    int Type; // 0-File, 1-Ring, 2-Torus, 3-Clique, 4-Bipartite
     int n;
+    int n2; // parameter for bipartite graph
     std::string path;
 };
 

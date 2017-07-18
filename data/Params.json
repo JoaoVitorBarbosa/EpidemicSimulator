@@ -2,7 +2,8 @@
     "GraphParam": {
                 "Type": 3,
                 "path": "/home/joao/Mestrado/Simulador/Source Code/data/click250.txt",
-                "n": 250
+                "n": 10,
+                "n2": 10
              },
     "RwParam": {
             "k": 50,

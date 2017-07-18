@@ -112,6 +112,15 @@ void test() {
 
 int main(int argc, char** argv) {
 
+    auto graph = GraphGenerator::Bipartite(1,5);
+    std::cout << "Vértices: " << graph.num_vertices << std::endl;
+    std::cout << "Arestas: " << graph.num_arestas << std::endl;
+    for(int i =0; i < graph.vetorAdj.size(); i++)
+        for(int j=0; j < graph.vetorAdj[i].size(); j++)
+            std::cout << i+1 << "-" << graph.vetorAdj[i][j] << std::endl;
+    
+    return 0;
+    
     if (argc < 2) {
         std::cerr << "Missing Parameter file argument." << std::endl;
         //return 0;
@@ -150,6 +159,8 @@ int main(int argc, char** argv) {
             case GraphType::Clique:
                 graph = GraphGenerator::Clique(params.Graph.n);
                 break;
+            case GraphType::Bipartite:
+                graph = GraphGenerator::Bipartite(params.Graph.n, params.Graph.n2);
             default:
                 break;
         }

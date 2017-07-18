@@ -60,7 +60,7 @@ void Simulator::setupRandomWalks(RwParam rwParams) {
 
     for (int i = 0; i < k; i++) {
         std::vector<double> rwParameters = rwParams.rwParamVector[i];
-        int vp = !rwParameters.empty() ? rwParameters[1] : rg.uniform(0, graph.num_vertices); //get random vertex
+        int vp = rwParameters.empty() || rwParameters[1] == -1 ? rg.uniform(0, graph.num_vertices) : rwParameters[1]; 
         //RandomWalk * rw = new RandomWalk(vp, 1, 0.05, .5, s, i);
         State s = rwToInf[i] ? State::Infected : State::Susceptible;
         RandomWalk * rw = !rwParameters.empty() ?
