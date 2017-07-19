@@ -51,6 +51,11 @@ void to_json(json& j, const Params& p) {
                 {"gama", p.Rw.gama},
                 {"tau", p.Rw.tau},
                 {"rwParamArray", p.Rw.rwParamArray}
+            }},
+        {"VertexParam",
+            {
+                {"p", p.Vertex.p},
+                {"vertexParamArray", p.Vertex.vertexParamArray}
             }}
     };
 }
@@ -69,6 +74,8 @@ void from_json(const json& j, Params& p) {
     p.Rw.gama = j.at("RwParam").at("gama").get<double>();
     p.Rw.tau = j.at("RwParam").at("tau").get<double>();
     p.Rw.rwParamArray = j.at("RwParam").at("rwParamArray").get<std::string>();
+    p.Vertex.p = j.at("VertexParam").at("p").get<double>();
+    p.Vertex.vertexParamArray = j.at("VertexParam").at("vertexParamArray").get<std::string>();
 }
 
 void validation() {
@@ -110,24 +117,24 @@ void test() {
     delete rw;
 }
 
-int main(int argc, char** argv) {
-
-    auto graph = GraphGenerator::Bipartite(1,5);
+void testBipartiteGraph(){
+    auto graph = GraphGenerator::Bipartite(1, 5);
     std::cout << "Vértices: " << graph.num_vertices << std::endl;
     std::cout << "Arestas: " << graph.num_arestas << std::endl;
-    for(int i =0; i < graph.vetorAdj.size(); i++)
-        for(int j=0; j < graph.vetorAdj[i].size(); j++)
-            std::cout << i+1 << "-" << graph.vetorAdj[i][j] << std::endl;
-    
-    return 0;
-    
+    for (int i = 0; i < graph.vetorAdj.size(); i++)
+        for (int j = 0; j < graph.vetorAdj[i].size(); j++)
+            std::cout << i + 1 << "-" << graph.vetorAdj[i][j] << std::endl;
+}
+
+int main(int argc, char** argv) {
+
     if (argc < 2) {
         std::cerr << "Missing Parameter file argument." << std::endl;
         //return 0;
     }
 
     try {
-        //argv[1] = "/home/joao/Mestrado/Simulador/Source\ Code/Epidemic_Simulator/data/Params.json";
+        argv[1] = "/home/joao/Mestrado/Simulador/Source\ Code/Epidemic_Simulator/data/Params.json";
         string paramsPath = argv[1];
         std::cout << "Parsing file " << paramsPath << std::endl;
         json j;
@@ -146,7 +153,12 @@ int main(int argc, char** argv) {
         std::vector<std::vector<double>> rws = ar;
         for (int i = 0; i < rws.size(); i++)
             params.Rw.rwParamVector[rws[i][0]] = rws[i];
-
+        
+        json arVertex = json::parse(params.Vertex.vertexParamArray);
+        std::vector<std::vector<double>> vertices = arVertex;
+        for (int i = 0; i < vertices.size(); i++)
+            params.Vertex.vertexParamVector[vertices[i][0]] = vertices[i][1];
+        
         ManipulaGrafoV graph;
 
         switch (params.Graph.Type) {
@@ -179,7 +191,7 @@ int main(int argc, char** argv) {
         ep.params = params;
         ep.infectedsGraphic(sim.fileNameInfectInterval);
         ep.randomWalkStateTimeSeries(sim.fileNameNumberRandomWalkStates);
-        
+
         ep.analysisStateTime(sim.randomWalks.at(0)->fileNameParmResult);
 
     } catch (exception& e) {

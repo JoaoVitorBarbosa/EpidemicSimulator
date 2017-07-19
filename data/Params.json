@@ -13,6 +13,10 @@
             "tau": 0.5,
             "rwParamArray": "[]"
         },
+    "VertexParam":{
+            "p": 0.5,
+            "vertexParamArray": "[[0,0.5],[1,0.9],[2,0.34]]"
+        },
     "p": 0.5,
     "Rounds": 1,
     "Time": 100000,

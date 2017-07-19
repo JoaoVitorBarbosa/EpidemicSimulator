@@ -29,8 +29,14 @@ struct RwParam {
     double lambda;
     double gama;
     double tau;
-    std::string rwParamArray;
+    std::string rwParamArray; // gets array of json from parameters file
     std::map<int, std::vector<double>> rwParamVector; //for each rw, store its parameters [{rw, [code, vertex, lambda, gama, tau, state (0-Sus, 1-Cont, 2-Inf)]}]
+};
+
+struct VertexParam{
+    double p;
+    std::string vertexParamArray; // gets array of json from parameters file
+    std::map<int, double> vertexParamVector; // stores vertex, parameter p.
 };
 
 enum GraphType{
@@ -54,6 +60,7 @@ struct Params {
     double p;
     GraphParam Graph;
     RwParam Rw;
+    VertexParam Vertex;
     std::string OutputDir;
 };
 
