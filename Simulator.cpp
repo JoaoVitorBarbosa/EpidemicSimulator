@@ -4,11 +4,6 @@
  */
 
 #include "Simulator.h"
-#include <unistd.h>
-#include <stdio.h>
-#include <boost/filesystem.hpp>
-#include <ctime>
-#include <map>
 
 #define GetCurrentDir getcwd
 
@@ -45,7 +40,7 @@ std::string Simulator::eventToString(EventType evt) {
 void Simulator::fillVertices(Params params) {
     for (int i = 0; i < graph.num_vertices; i++) {
         double p = params.Vertex.vertexParamVector[i] != NULL ? params.Vertex.vertexParamVector[i] : params.Vertex.p;
-        Vertex * vertex = new Vertex(0, p, i);
+        Vertex * vertex = new Vertex(0, p, i, k, this->outputDir);
         vertices.push_back(vertex);
     }
 }
@@ -111,7 +106,7 @@ Simulator::Simulator(Params params, std::string jsonStr, ManipulaGrafoV _graph) 
 
     k = params.Rw.k;
     timeLimit = params.Time;
-    rounds = params.Rounds;
+    rounds = params.Runs;
     // implementar Graph -> Inserir direto Classe ManipulaGrafo com os vertices e arestas
     this->graph = _graph;
     time = 0;
@@ -124,7 +119,7 @@ Simulator::Simulator(Params params, std::string jsonStr, ManipulaGrafoV _graph) 
     tm *ltm = localtime(&now);
     std::string fName = std::to_string(ltm->tm_mday) + "-" + std::to_string(1 + ltm->tm_mon) + "-" + std::to_string(1900 + ltm->tm_year) + " " + std::to_string(ltm->tm_hour) + ":" + std::to_string(ltm->tm_min) + ":" + std::to_string(1 + ltm->tm_sec);
 
-    outputDir = params.OutputDir + "/" + fName;
+    outputDir = params.OutputDir;// + "/" + fName;
     boost::filesystem::path dir(outputDir.c_str());
     if (boost::filesystem::create_directory(dir)) {
         std::cout << "Directory created successfully" << "\n";
@@ -206,6 +201,7 @@ void Simulator::infect(Vertex * vertex, Event evt) {
                 (*it)->setState(State::Contracted);
                 (*it)->setTimeStateChange(time, State::Contracted);
                 num_Inf_Events++;
+                infectionTimes++; // increase number of infections
 
                 (*it)->insertTimeContracted(t_tau - time);
 
@@ -229,6 +225,7 @@ void Simulator::beInfected(Vertex * v, Event evt) {
         rw->setState(State::Contracted);
         rw->setTimeStateChange(time, State::Contracted);
         num_Inf_Events++;
+        infectionTimes++;
 
         rw->insertTimeContracted(t_tau - time);
 
@@ -377,11 +374,15 @@ void Simulator::process() {
 
     std::cout << "End epidemic" << std::endl;
 
-    for (int k = 0; k < randomWalks.size(); k++) {
-        randomWalks.at(k)->WriteResults();
+    for (int i = 0; i < randomWalks.size(); i++) {
+        randomWalks.at(i)->WriteResults();
     }
     
     writeInfectInterval();
+    
+    for (int i = 0; i < vertices.size(); i++) {
+        vertices[i]->writeTimeInfected(time);
+    }
     
     /*while(true){
     

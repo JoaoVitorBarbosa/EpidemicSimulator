@@ -16,14 +16,13 @@
 #include <iostream>
 #include "RandomGenerator.h"
 #include "Vertex.h"
-#include "Simulator.h"
 #include <iomanip>
 #include <limits>
-#include "Params.h"
-#include "json.hpp"
-#include "GraphGenerator.h"
 #include "EpidemicAnalysis.h"
 #include <map>
+#include "EpidemicManager.h"
+#include "Params.h"
+#include "json.hpp"
 
 using namespace std;
 
@@ -33,7 +32,7 @@ using json = nlohmann::json;
 
 void to_json(json& j, const Params& p) {
     j = json{
-        {"Rounds", p.Rounds},
+        {"Runs", p.Runs},
         {"Time", p.Time},
         {"OutputDir", p.OutputDir},
         {"p", p.p},
@@ -61,7 +60,7 @@ void to_json(json& j, const Params& p) {
 }
 
 void from_json(const json& j, Params& p) {
-    p.Rounds = j.at("Rounds").get<int>();
+    p.Runs = j.at("Runs").get<int>();
     p.Time = j.at("Time").get<int>();
     p.p = j.at("p").get<double>();
     p.OutputDir = j.at("OutputDir").get<std::string>();
@@ -77,6 +76,7 @@ void from_json(const json& j, Params& p) {
     p.Vertex.p = j.at("VertexParam").at("p").get<double>();
     p.Vertex.vertexParamArray = j.at("VertexParam").at("vertexParamArray").get<std::string>();
 }
+
 
 void validation() {
     double p = 0.37;
@@ -135,65 +135,29 @@ int main(int argc, char** argv) {
 
     try {
         argv[1] = "/home/joao/Mestrado/Simulador/Source\ Code/Epidemic_Simulator/data/Params.json";
+        
         string paramsPath = argv[1];
         std::cout << "Parsing file " << paramsPath << std::endl;
         json j;
         std::ifstream i(paramsPath);
         i >> j;
 
+        // converts json to object
         Params params = j;
-        std::cout << "Graph Type: " << params.Graph.Type << std::endl;
-        std::cout << "Graph path: " << params.Graph.path << std::endl;
-        std::cout << "RW k: " << params.Rw.k << std::endl;
-        std::cout << "RW k: " << params.Rw.ki << std::endl;
-        std::cout << "Time: " << params.Time << std::endl;
-        std::cout << "Array: " << params.Rw.rwParamArray << std::endl;
 
         json ar = json::parse(params.Rw.rwParamArray);
         std::vector<std::vector<double>> rws = ar;
         for (int i = 0; i < rws.size(); i++)
             params.Rw.rwParamVector[rws[i][0]] = rws[i];
-        
+
         json arVertex = json::parse(params.Vertex.vertexParamArray);
         std::vector<std::vector<double>> vertices = arVertex;
         for (int i = 0; i < vertices.size(); i++)
             params.Vertex.vertexParamVector[vertices[i][0]] = vertices[i][1];
         
-        ManipulaGrafoV graph;
-
-        switch (params.Graph.Type) {
-            case GraphType::File:
-                graph.lerArquivo(params.Graph.path, false);
-                break;
-            case GraphType::Ring:
-                graph = GraphGenerator::Ring(params.Graph.n);
-                break;
-            case GraphType::Clique:
-                graph = GraphGenerator::Clique(params.Graph.n);
-                break;
-            case GraphType::Bipartite:
-                graph = GraphGenerator::Bipartite(params.Graph.n, params.Graph.n2);
-            default:
-                break;
-        }
-
-        Simulator sim(params, j.dump(4), graph);
-        sim.process();
-
-        std::string analysisDir = sim.outputDir + "/Analysis";
-
-        boost::filesystem::path dir(analysisDir.c_str());
-        if (boost::filesystem::create_directory(dir)) {
-            std::cout << "Analysis directory created successfully" << "\n";
-        }
-
-        EpidemicAnalysis ep(analysisDir);
-        ep.params = params;
-        ep.infectedsGraphic(sim.fileNameInfectInterval);
-        ep.randomWalkStateTimeSeries(sim.fileNameNumberRandomWalkStates);
-
-        ep.analysisStateTime(sim.randomWalks.at(0)->fileNameParmResult);
-
+        EpidemicManager manager;
+        manager.startSimulation(params, j.dump(4));
+        
     } catch (exception& e) {
         std::cerr << "Error while parsing parameter file: . " << argv[1] << " Erro: " << e.what() << std::endl;
     }

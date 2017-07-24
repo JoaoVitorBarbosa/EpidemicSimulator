@@ -7,86 +7,88 @@
 
 #include "Vertex.h"
 
-
-Vertex::Vertex(){}
-
-Vertex::Vertex(int _rwInf, double _p, int _code) : rwInfecteds(_rwInf), p(_p), code(_code)
-{
-//    fileNameTimeResult = "../data/output/" + std::to_string(code) + "_vertexResults.txt";
-//    
-//    std::ofstream arq; 
-//    arq.open(fileNameTimeResult);
-//    arq << "#" << '\n';
-//    arq.close();
+Vertex::Vertex() {
 }
 
-Vertex::~Vertex()
-{
+Vertex::Vertex(int _rwInf, double _p, int _code, int _kMax, std::string _dirToSave) : rwInfecteds(_rwInf), p(_p), code(_code), kMax(_kMax), dirToSave(_dirToSave) {
+    fileNameTimeResult = dirToSave + "/" + std::to_string(code) + "_vertexResults.txt";
+    totalTimeWithInfc = 0.0;
+    timeLastNumberinfect = 0.0;
+}
+
+Vertex::~Vertex() {
     //for(std::list<RandomWalk*>::iterator it = randomWalks.begin(); it != randomWalks.end(); it++)
-//        delete *it;
+    //        delete *it;
 }
 
-void Vertex::setP(double _p)
-{
+void Vertex::setP(double _p) {
     p = _p;
 }
 
-double Vertex::getP()
-{
+double Vertex::getP() {
     return p;
 }
 
-void Vertex::setRwInfecteds(int rw_i)
-{
+void Vertex::setRwInfecteds(int rw_i) {
     rwInfecteds = rw_i;
 }
 
-int Vertex::getRwInfecteds(){
+int Vertex::getRwInfecteds() {
     return rwInfecteds;
 }
 
-void Vertex::decreaseRwInfecteds(double time)
-{
-    std::pair<double, int> pair = std::make_pair(time, rwInfecteds);
-    timeNumberInfect.push_back(pair);
-    writeTimeInfected(pair);
+void Vertex::decreaseRwInfecteds(double time) {
+    double interval = time - this->timeLastNumberinfect;
+    double actInterval = timeNumberInfect[rwInfecteds];
+
+    timeNumberInfect[rwInfecteds] = interval + actInterval;
+    totalTimeWithInfc += interval;
+
+    timeLastNumberinfect = time;
     rwInfecteds--;
 }
 
-void Vertex::increaseRwInfecteds(double time)
-{
-    std::pair<double, int> pair = std::make_pair(time, rwInfecteds);
-    timeNumberInfect.push_back(pair);
-    writeTimeInfected(pair);
+void Vertex::increaseRwInfecteds(double time) {
+    double interval = time - this->timeLastNumberinfect;
+    double actInterval = timeNumberInfect[rwInfecteds];
+
+    // don't count time with k = 0
+    // if size == 1, so it was 0 before
+    if (randomWalks.size() > 1)
+    {
+        timeNumberInfect[rwInfecteds] = interval + actInterval;
+        totalTimeWithInfc += interval;
+    }
+
+    timeLastNumberinfect = time;
     rwInfecteds++;
 }
 
-void Vertex::writeTimeInfected(std::pair<double, int> pair)
-{
-    /*std::ofstream arq; 
+void Vertex::writeTimeInfected(double time) {
+    std::ofstream arq;
     arq.open(fileNameTimeResult, std::ofstream::out | std::ofstream::app);
 
-    arq << std::fixed << pair.first << "," << pair.second << '\n';
+    //for(std::map<int, double>::iterator it = timeNumberInfect.begin(); it != timeNumberInfect.end(); it++) 
+//        arq << it->first  << "," << it->second / totalTimeWithInfc << std::endl;
     
-    arq.close();*/
+    for (int i = 0; i <= kMax; i++)
+        arq << i  << "," << timeNumberInfect[i] / totalTimeWithInfc << std::endl;
+
+    arq.close();
 }
 
-
-std::list<RandomWalk*>::iterator Vertex::setRandomWalk(RandomWalk* rw)
-{
+std::list<RandomWalk*>::iterator Vertex::setRandomWalk(RandomWalk* rw) {
     randomWalks.push_front(rw);
     std::list<RandomWalk*>::iterator it = randomWalks.begin();
     return it;
 }
 
-std::list<RandomWalk*>& Vertex::getRandomWalkList(){
+std::list<RandomWalk*>& Vertex::getRandomWalkList() {
     return randomWalks;
 }
 
-void Vertex::eraseRandomWalk(std::list<RandomWalk*>::iterator it)
-{
-    if(!randomWalks.empty())
-    {
+void Vertex::eraseRandomWalk(std::list<RandomWalk*>::iterator it) {
+    if (!randomWalks.empty()) {
         randomWalks.erase(it);
     }
 }

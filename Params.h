@@ -56,7 +56,7 @@ struct GraphParam {
 
 struct Params {
     int Time;
-    int Rounds;
+    int Runs;
     double p;
     GraphParam Graph;
     RwParam Rw;

@@ -24,11 +24,15 @@
 #include "RandomGenerator.h"
 #include "Event.h"
 #include "Params.h"
+#include <unistd.h>
+#include <stdio.h>
+#include <boost/filesystem.hpp>
+#include <ctime>
+
 
 class Simulator {
     RandomGenerator rg;
 
-    double time;
     int num_Infecteds;
     int num_Inf_Events;
     int timeLimit;
@@ -51,7 +55,9 @@ class Simulator {
     void writeNumberRwStatePerTime();
 
 public:
+    double time;
     int k;
+    int infectionTimes;
     std::string fileNameInfectInterval;
     std::string fileNameNumberRandomWalkStates;
     std::string outputDir;

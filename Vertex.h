@@ -15,7 +15,7 @@
 
 #include<list>
 #include "RandomWalk.h"
-#include <vector>>
+#include <map>
 
 class Vertex {
     // number of rw infecteds
@@ -24,13 +24,18 @@ class Vertex {
     double p;
     // rw list. Store pointer to rw instead of vector index
     std::list<RandomWalk*> randomWalks;
-    std::vector<std::pair<double, int> > timeNumberInfect;
+    std::map<int, double> timeNumberInfect;
     std::string fileNameTimeResult;
     int code;
+    double timeLastNumberinfect;
+    int kMax;
+    std::string dirToSave;
+    double totalTimeWithInfc;
+    
 public:
 
     Vertex();
-    Vertex(int, double, int);
+    Vertex(int rwinf_0, double p, int code, int _kMax, std::string _dirToSave);
     ~Vertex();
 
     void setP(double);
@@ -40,7 +45,9 @@ public:
     void decreaseRwInfecteds(double time);
     void increaseRwInfecteds(double time);
     int getRwInfecteds();
-    void writeTimeInfected(std::pair<double, int> pair);
+    /// Write file with infected distribution
+    /// \param time is the last time of system
+    void writeTimeInfected(double time);
 
     // Set RandomWalk and return iterator that point to position
     std::list<RandomWalk*>::iterator setRandomWalk(RandomWalk* rw);

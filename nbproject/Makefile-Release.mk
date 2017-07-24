@@ -36,6 +36,7 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 # Object Files
 OBJECTFILES= \
 	${OBJECTDIR}/EpidemicAnalysis.o \
+	${OBJECTDIR}/EpidemicManager.o \
 	${OBJECTDIR}/ManipulaGrafo.o \
 	${OBJECTDIR}/RandomGenerator.o \
 	${OBJECTDIR}/RandomWalk.o \
@@ -72,6 +73,11 @@ ${OBJECTDIR}/EpidemicAnalysis.o: EpidemicAnalysis.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/EpidemicAnalysis.o EpidemicAnalysis.cpp
+
+${OBJECTDIR}/EpidemicManager.o: EpidemicManager.cpp
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/EpidemicManager.o EpidemicManager.cpp
 
 ${OBJECTDIR}/ManipulaGrafo.o: ManipulaGrafo.cpp
 	${MKDIR} -p ${OBJECTDIR}

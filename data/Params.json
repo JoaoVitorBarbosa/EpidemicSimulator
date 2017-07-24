@@ -1,24 +1,24 @@
 {
     "GraphParam": {
-                "Type": 3,
+                "Type": 1,
                 "path": "/home/joao/Mestrado/Simulador/Source Code/data/click250.txt",
-                "n": 10,
+                "n": 100,
                 "n2": 10
              },
     "RwParam": {
-            "k": 50,
-            "ki": 25,
-            "lambda": 1,
-            "gama": 0.1,
+            "k": 25,
+            "ki": 10,
+            "lambda": 2,
+            "gama": 0.2,
             "tau": 0.5,
-            "rwParamArray": "[]"
+            "rwParamArray": "[[0, 1, 1, 0.01, 0.5, 2], [2, 5, 1, 0.01, 0.5, 2]]"
         },
     "VertexParam":{
             "p": 0.5,
-            "vertexParamArray": "[[0,0.5],[1,0.9],[2,0.34]]"
+            "vertexParamArray": "[[0,1.0],[1,1.0],[2,1.0],[3,1.0]]"
         },
     "p": 0.5,
-    "Rounds": 1,
-    "Time": 100000,
+    "Runs": 10,
+    "Time": 1000,
     "OutputDir": "/home/joao/Mestrado/Simulador/Source Code/data/output"
 }
