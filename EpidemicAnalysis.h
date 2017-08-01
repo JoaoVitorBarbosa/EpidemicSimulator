@@ -48,7 +48,7 @@ public:
     
     /// Creates graphic with ccdf distribution of states: susceptible, contracted, infected
     /// \param filepath Stores state change and time
-    void analysisStateTime(std::string filepath);
+    void analysisStateTime(std::string filepath, std::string title);
 
     void printCCDF(std::multiset<double> elements, std::string title);
     void analysisAll(std::string dir, int num_rw);
@@ -57,7 +57,7 @@ public:
     /// \param arquivo (csv) stores snapshot of time, rw_infec, rw_cont, rw_inf
     void randomWalkStateTimeSeries(std::string arquivo);
     
-    void infectedsGraphic(std::string filepath);
+    void infectedsGraphic(std::string filepath, std::string title);
 };
 
 

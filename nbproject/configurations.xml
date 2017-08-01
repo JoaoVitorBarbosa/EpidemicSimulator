@@ -62,6 +62,7 @@
             <pElem>../../../../Desenvolvimento/gnuplot-iostream</pElem>
             <pElem>../ThirdParties/JSON</pElem>
           </incDir>
+          <commandLine>-pthread</commandLine>
         </ccTool>
         <linkerTool>
           <linkerAddLib>

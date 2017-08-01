@@ -96,7 +96,7 @@ void EpidemicAnalysis::createStateStatistics(std::vector<std::pair<double, int> 
     std::vector<std::pair<double, double> > contractedsPts = getCCDFPoints(contracteds_segments);
     std::vector<std::pair<double, double> > infectedsPts = getCCDFPoints(infecteds_segments);
 
-    std::string filename = this->outputDir + "/CCDFStateRW.png";
+    std::string filename = this->outputDir + "/CCDFStateRW" + rw + ".png";
     
     // print all ccdf in one graphic
     Gnuplot gp;
@@ -277,13 +277,13 @@ void readTimeNumberInfect(std::string filename, std::set<double, int>) {
     arq.close();
 }
 
-void EpidemicAnalysis::analysisStateTime(std::string filepath) {
+void EpidemicAnalysis::analysisStateTime(std::string filepath, std::string title) {
     std::vector<std::pair<double, int> > pairs;
     readTimestampStateChangeCSV(filepath, pairs);
-    createStateStatistics(pairs, "kjnj");
+    createStateStatistics(pairs, title);
 }
 
-void EpidemicAnalysis::infectedsGraphic(std::string filepath) {
+void EpidemicAnalysis::infectedsGraphic(std::string filepath, std::string title) {
     std::vector<std::pair<int,double>> timeStampStatesChange;
     
     std::ifstream arq;
@@ -314,7 +314,7 @@ void EpidemicAnalysis::infectedsGraphic(std::string filepath) {
 
     arq.close();
     
-    std::string filename = outputDir + "/infectedInterval.png";
+    std::string filename = outputDir + "/infecteds" + title + ".png";
     //../data/EpidemicAnalysis/infectInterval.png
     
     Gnuplot gp;

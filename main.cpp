@@ -23,6 +23,7 @@
 #include "EpidemicManager.h"
 #include "Params.h"
 #include "json.hpp"
+#include <thread>
 
 using namespace std;
 
@@ -77,7 +78,6 @@ void from_json(const json& j, Params& p) {
     p.Vertex.vertexParamArray = j.at("VertexParam").at("vertexParamArray").get<std::string>();
 }
 
-
 void validation() {
     double p = 0.37;
     int count = 0;
@@ -117,7 +117,7 @@ void test() {
     delete rw;
 }
 
-void testBipartiteGraph(){
+void testBipartiteGraph() {
     auto graph = GraphGenerator::Bipartite(1, 5);
     std::cout << "Vértices: " << graph.num_vertices << std::endl;
     std::cout << "Arestas: " << graph.num_arestas << std::endl;
@@ -126,7 +126,39 @@ void testBipartiteGraph(){
             std::cout << i + 1 << "-" << graph.vetorAdj[i][j] << std::endl;
 }
 
+
 int main(int argc, char** argv) {
+
+    /*std::thread first([]() {
+        int i = 0;
+        for (int j = 0; j < 1000000; j++) {
+            i = j;
+        }
+    });
+    std::thread second([]() {
+        int i = 0;
+        for (int j = 0; j < 1000000; j++) {
+            i = j;
+        }
+    });
+    
+    std::thread third([]() {
+        int i = 0;
+        for (int j = 0; j < 1000000; j++) {
+            i = j;
+        }
+    });
+
+    std::cout << "main, foo and bar now execute concurrently...\n" << std::endl;
+
+
+    first.join();
+    second.join();
+    third.join();
+
+    std::cout << "foo and bar completed.\n";
+
+    return 0;*/
 
     if (argc < 2) {
         std::cerr << "Missing Parameter file argument." << std::endl;
@@ -135,7 +167,7 @@ int main(int argc, char** argv) {
 
     try {
         argv[1] = "/home/joao/Mestrado/Simulador/Source\ Code/Epidemic_Simulator/data/Params.json";
-        
+
         string paramsPath = argv[1];
         std::cout << "Parsing file " << paramsPath << std::endl;
         json j;
@@ -154,10 +186,10 @@ int main(int argc, char** argv) {
         std::vector<std::vector<double>> vertices = arVertex;
         for (int i = 0; i < vertices.size(); i++)
             params.Vertex.vertexParamVector[vertices[i][0]] = vertices[i][1];
-        
+
         EpidemicManager manager;
         manager.startSimulation(params, j.dump(4));
-        
+
     } catch (exception& e) {
         std::cerr << "Error while parsing parameter file: . " << argv[1] << " Erro: " << e.what() << std::endl;
     }

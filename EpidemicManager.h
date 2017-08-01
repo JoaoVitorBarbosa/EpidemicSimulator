@@ -23,6 +23,7 @@
 #include <boost/accumulators/accumulators.hpp>
 #include <boost/accumulators/statistics.hpp>
 #include <ctime>
+#include <thread>
 
 using namespace std;
 
@@ -39,6 +40,9 @@ public:
     void startSimulation(Params params, std::string paramsStr);
     
 private:
+    
+    void runThreadSimulation(Params params, std::string paramsStr, ManipulaGrafoV graph, int run);
+    
     void createDirectory(std::string directory);
     boost::accumulators::accumulator_set<double, boost::accumulators::features<boost::accumulators::tag::mean, boost::accumulators::tag::variance>> timeAccumulator;
     boost::accumulators::accumulator_set<double, boost::accumulators::features<boost::accumulators::tag::mean, boost::accumulators::tag::variance>> infectionsAccumulator;

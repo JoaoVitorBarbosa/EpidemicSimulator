@@ -25,7 +25,6 @@ class Vertex {
     // rw list. Store pointer to rw instead of vector index
     std::list<RandomWalk*> randomWalks;
     std::map<int, double> timeNumberInfect;
-    std::string fileNameTimeResult;
     int code;
     double timeLastNumberinfect;
     int kMax;
@@ -33,6 +32,7 @@ class Vertex {
     double totalTimeWithInfc;
     
 public:
+    std::string fileNameTimeResult;
 
     Vertex();
     Vertex(int rwinf_0, double p, int code, int _kMax, std::string _dirToSave);
