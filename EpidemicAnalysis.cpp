@@ -45,7 +45,7 @@ void EpidemicAnalysis::readTimestampStateChangeCSV(std::string filename, std::ve
 void EpidemicAnalysis::analysisAll(std::string dir, int num_rw) {
     std::vector<std::pair<double, int> > all;
 
-    for (int i = 0; i <= num_rw; i++) {
+    for (int i = 0; i < num_rw; i++) {
         readTimestampStateChangeCSV(dir + "/RW_" + std::to_string(i) + "_Results.txt", all);
         all.push_back(std::make_pair(0, 0));
     }

@@ -54,6 +54,8 @@ struct GraphParam {
     std::string path;
 };
 
+
+/// Struct used to convert json parameters in c++ object 
 struct Params {
     int Time;
     int Runs;

@@ -56,6 +56,7 @@ class Simulator {
 
 public:
     double time;
+    // Number of infected Random Walks
     int k;
     int infectionTimes;
     std::string fileNameInfectInterval;
@@ -71,6 +72,7 @@ public:
     ~Simulator();
 
     void initialize(Params params);
+    
     /// Starts Simulation
     void process();
 };

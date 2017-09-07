@@ -20,7 +20,7 @@ public:
 
     /// Generates a ring graph
     /// \param n
-    /// \return 
+    /// \return Ring graph
     static ManipulaGrafoV Ring(int n) {
         ManipulaGrafoV graph;
         graph.inicializaGrafo(n);
@@ -35,7 +35,7 @@ public:
 
     /// Generates a clique graph
     /// \param n vertices
-    /// \return 
+    /// \return Clique Graph
     static ManipulaGrafoV Clique(int n) {
 
         ManipulaGrafoV graph;
@@ -55,7 +55,7 @@ public:
     /// Generates a bipartite graph
     /// \param n vertices of type 1
     /// \param n2 vertices of type 2
-    /// \return 
+    /// \return Bipartite Graph
     static ManipulaGrafoV Bipartite(int n, int n2) {
         ManipulaGrafoV graph;
         graph.inicializaGrafo(n + n2);

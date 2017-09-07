@@ -9,9 +9,9 @@
             "k": 25,
             "ki": 10,
             "lambda": 2,
-            "gama": 0.2,
+            "gama": 0.1,
             "tau": 0.5,
-            "rwParamArray": "[[0, 1, 1, 0.01, 0.5, 2], [2, 5, 1, 0.01, 0.5, 2]]"
+            "rwParamArray": "[]"
         },
     "VertexParam":{
             "p": 0.5,

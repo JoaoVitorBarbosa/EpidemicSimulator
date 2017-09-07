@@ -50,7 +50,7 @@ struct History {
     }
 
     int rw;
-    // rw that infected rw
+    // RW that infected RW
     int rw_inf;
     int vertex;
     double time;

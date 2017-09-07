@@ -38,51 +38,12 @@ void EpidemicManager::startSimulation(Params params, std::string strParams) {
 
     std::cout << "Starting simulation" << "\n";
 
-    std::thread * threads = new std::thread[params.Runs];
+    int num_threads = params.Runs;
+    
+    std::thread * threads = new std::thread[num_threads];
 
     for (int i = 0; i < params.Runs; i++) {
-        
         threads[i] = std::thread(&EpidemicManager::runThreadSimulation, this, params, strParams, graph, i);
-        
-        /*threads[i] = std::thread([](EpidemicManager &_this, Params params, std::string strParams, ManipulaGrafoV graph, int i) {
-            std::cout << "--------- ROUND " << i << " --------- \n";
-
-            Params paramsR = params;
-            paramsR.OutputDir = paramsR.OutputDir + "/Round " + std::to_string(i);
-            _this.createDirectory(paramsR.OutputDir);
-
-            Simulator * sim = new Simulator(paramsR, strParams, graph);
-            sim->process();
-
-            _this.timeAccumulator(sim->time);
-            _this.infectionsAccumulator(sim->infectionTimes);
-
-            std::string analysisDir = sim->outputDir + "/Analysis";
-            _this.createDirectory(analysisDir);
-
-            EpidemicAnalysis * ep = new EpidemicAnalysis(analysisDir);
-            ep->params = params;
-            ep->infectedsGraphic(sim->fileNameInfectInterval, "System");
-            ep->randomWalkStateTimeSeries(sim->fileNameNumberRandomWalkStates);
-
-            ep->outputDir = analysisDir + "/RandomWalks";
-            _this.createDirectory(ep->outputDir);
-            for (int i = 0; i < sim->randomWalks.size(); i++)
-                    ep->analysisStateTime(sim->randomWalks.at(i)->fileNameParmResult, std::to_string(i));
-
-                    ep->outputDir = analysisDir + "/Vertices";
-                    _this.createDirectory(ep->outputDir);
-                for (int i = 0; i < sim->vertices.size(); i++)
-                        ep->infectedsGraphic(sim->vertices.at(i)->fileNameTimeResult, std::to_string(i));
-
-                        //ep->outputDir = analysisDir;
-                        //ep->analysisAll(analysisDir, sim->k);
-
-                        delete sim;
-                        delete ep;
-
-                        std::cout << "--------- END ROUND " << i << " --------- \n";
-                }, this, params, strParams, graph, i);*/
     }
 
     for (int i = 0; i < params.Runs; i++)
@@ -129,8 +90,8 @@ void EpidemicManager::runThreadSimulation(Params params, std::string strParams, 
     for (int i = 0; i < sim->vertices.size(); i++)
         ep->infectedsGraphic(sim->vertices.at(i)->fileNameTimeResult, std::to_string(i));
 
-    //ep->outputDir = analysisDir;
-    //ep->analysisAll(analysisDir, sim->k);
+    ep->outputDir = analysisDir;
+    ep->analysisAll(sim->outputDir, sim->k);
 
     delete sim;
     delete ep;

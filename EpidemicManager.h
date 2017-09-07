@@ -8,6 +8,9 @@
  * Author: joao
  *
  * Created on 23 de Julho de 2017, 19:54
+ * 
+ * Manage epidemic, setting parameters and starting simulation
+ * 
  */
 
 #ifndef EPIDEMICMANAGER_H
@@ -41,9 +44,18 @@ public:
     
 private:
     
+    /// Run a simulation inside of a thread
+    /// \param params
+    /// \param paramsStr Parameter that will be printed in log
+    /// \param graph 
+    /// \param run Represents id of run
     void runThreadSimulation(Params params, std::string paramsStr, ManipulaGrafoV graph, int run);
     
+    /// Creates Directory to save files
+    /// \param directory
     void createDirectory(std::string directory);
+    
+    /// Boost accumulator used to store duration of epidemic
     boost::accumulators::accumulator_set<double, boost::accumulators::features<boost::accumulators::tag::mean, boost::accumulators::tag::variance>> timeAccumulator;
     boost::accumulators::accumulator_set<double, boost::accumulators::features<boost::accumulators::tag::mean, boost::accumulators::tag::variance>> infectionsAccumulator;
 };

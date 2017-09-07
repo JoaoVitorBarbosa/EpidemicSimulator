@@ -7,21 +7,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/joao/Mestrado/Simulador/Source%20Code/Epidemic_Simulator/Vertex.h</file>
-            <file>file:/home/joao/Mestrado/Simulador/Source%20Code/Epidemic_Simulator/RandomGenerator.h</file>
-            <file>file:/home/joao/Mestrado/Simulador/Source%20Code/Epidemic_Simulator/Simulator.h</file>
-            <file>file:/home/joao/Mestrado/Simulador/Source%20Code/Epidemic_Simulator/RandomWalk.h</file>
-            <file>file:/home/joao/Mestrado/Simulador/Source%20Code/Epidemic_Simulator/Params.h</file>
-            <file>file:/home/joao/Mestrado/Simulador/Source%20Code/Epidemic_Simulator/RandomWalk.cpp</file>
-            <file>file:/home/joao/Mestrado/Simulador/Source%20Code/Epidemic_Simulator/Vertex.cpp</file>
-            <file>file:/home/joao/Mestrado/Simulador/Source%20Code/Epidemic_Simulator/EpidemicAnalysis.cpp</file>
             <file>file:/home/joao/Mestrado/Simulador/Source%20Code/Epidemic_Simulator/EpidemicManager.h</file>
-            <file>file:/home/joao/Mestrado/Simulador/Source%20Code/Epidemic_Simulator/Simulator.cpp</file>
-            <file>file:/home/joao/Mestrado/Simulador/Source%20Code/Epidemic_Simulator/GraphGenerator.h</file>
             <file>file:/home/joao/Mestrado/Simulador/Source%20Code/Epidemic_Simulator/EpidemicManager.cpp</file>
-            <file>file:/home/joao/Mestrado/Simulador/Source%20Code/Epidemic_Simulator/main.cpp</file>
-            <file>file:/home/joao/Mestrado/Simulador/Source%20Code/Epidemic_Simulator/EpidemicAnalysis.h</file>
-            <file>file:/home/joao/Mestrado/Simulador/Source%20Code/Epidemic_Simulator/RandomGenerator.cpp</file>
+            <file>file:/home/joao/Mestrado/Simulador/Source%20Code/Epidemic_Simulator/Event.h</file>
+            <file>file:/home/joao/Mestrado/Simulador/Source%20Code/Epidemic_Simulator/data/Params.json</file>
         </group>
     </open-files>
 </project-private>

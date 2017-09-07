@@ -16,6 +16,7 @@
 #include<iostream>
 #include<string>
 
+/// Represents type of events stored in Event list
 enum EventType {
     Walk,
     Recover,
@@ -49,8 +50,8 @@ public:
     Event(double _time, int _index, EventType _type) : time(_time), randomwalk(_index), type(_type) {
     }
 
-    // overload operator to use Event in priority queue. Operator is inverted > to enable min priority
-
+    
+    /// Overload operator to use Event in a min priority queue.
     friend bool operator<(const Event& e, const Event& r) {
         return e.time
                 > r.time; // operator > inverted to change order

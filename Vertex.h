@@ -45,14 +45,19 @@ public:
     void decreaseRwInfecteds(double time);
     void increaseRwInfecteds(double time);
     int getRwInfecteds();
+    
     /// Write file with infected distribution
     /// \param time is the last time of system
     void writeTimeInfected(double time);
 
-    // Set RandomWalk and return iterator that point to position
+    /// Set RandomWalk and return iterator that point to its position
+    /// \param rw
+    /// \return 
     std::list<RandomWalk*>::iterator setRandomWalk(RandomWalk* rw);
     std::list<RandomWalk*>& getRandomWalkList();
 
+    /// Remove Random Walk from RW list using its iterator
+    /// \param it RW Iterator
     void eraseRandomWalk(std::list<RandomWalk*>::iterator it);
 };
 
