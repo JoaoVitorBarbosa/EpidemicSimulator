@@ -1,0 +1,12 @@
++ data
+    + output
+        + yyyy-MM-dd-hhmmss
+            + Round 0
+                + Analysis
+                    + RandomWalks
+                    + Vertices
+                + RandomWalks
+                + Vertices
+            + Round 1
+            ....
+            + Round n

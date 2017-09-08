@@ -72,14 +72,23 @@ std::string Simulator::eventToString(EventType evt) {
 }
 
 void Simulator::fillVertices(Params params) {
+    // create directory to vertices 
+    std::string verticesOutputDir = this->outputDir + "/Vertices";
+    Utils::createDirectory(verticesOutputDir);
+    
     for (int i = 0; i < graph.num_vertices; i++) {
         double p = params.Vertex.vertexParamVector[i] != NULL ? params.Vertex.vertexParamVector[i] : params.Vertex.p;
-        Vertex * vertex = new Vertex(0, p, i, k, this->outputDir);
+        Vertex * vertex = new Vertex(0, p, i, k, verticesOutputDir);
         vertices.push_back(vertex);
     }
 }
 
 void Simulator::setupRandomWalks(RwParam rwParams) { 
+    // create directory to random walks
+    std::string randomWalkOutputDir = this->outputDir + "/RandomWalks";
+    Utils::createDirectory(randomWalkOutputDir);
+    
+    // select randomly random walks that must be infected
     std::map<int, bool> rwToInf;
     for (int j = 0; j < rwParams.ki; j++) {
         int rw = rg.uniform(0, rwParams.ki);
@@ -93,8 +102,8 @@ void Simulator::setupRandomWalks(RwParam rwParams) {
         int vp = rwParameters.empty() || rwParameters[1] == -1 ? rg.uniform(0, graph.num_vertices) : rwParameters[1]; 
         State s = rwToInf[i] ? State::Infected : State::Susceptible;
         RandomWalk * rw = !rwParameters.empty() ?
-                new RandomWalk(vp, rwParameters[2], rwParameters[3], rwParameters[4], (State) rwParameters[5], (int) rwParameters[0], outputDir)
-                : new RandomWalk(vp, rwParams.lambda, rwParams.gama, rwParams.tau, s, i, outputDir);
+                new RandomWalk(vp, rwParameters[2], rwParameters[3], rwParameters[4], (State) rwParameters[5], (int) rwParameters[0], randomWalkOutputDir)
+                : new RandomWalk(vp, rwParams.lambda, rwParams.gama, rwParams.tau, s, i, randomWalkOutputDir);
         randomWalks.push_back(rw);
 
         rw->setRwPosition(vertices[vp]->setRandomWalk(rw));

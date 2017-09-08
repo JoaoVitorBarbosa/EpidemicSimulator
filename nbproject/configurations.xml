@@ -14,6 +14,7 @@
       <itemPath>RandomGenerator.h</itemPath>
       <itemPath>RandomWalk.h</itemPath>
       <itemPath>Simulator.h</itemPath>
+      <itemPath>Utils.h</itemPath>
       <itemPath>Vertex.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
@@ -29,6 +30,7 @@
       <itemPath>RandomGenerator.cpp</itemPath>
       <itemPath>RandomWalk.cpp</itemPath>
       <itemPath>Simulator.cpp</itemPath>
+      <itemPath>Utils.cpp</itemPath>
       <itemPath>Vertex.cpp</itemPath>
       <itemPath>main.cpp</itemPath>
     </logicalFolder>
@@ -43,6 +45,7 @@
                    kind="IMPORTANT_FILES_FOLDER">
       <itemPath>Makefile</itemPath>
     </logicalFolder>
+    <itemPath>data/OutputDirStructure</itemPath>
     <itemPath>Data/Params.json</itemPath>
   </logicalFolder>
   <projectmakefile>Makefile</projectmakefile>
@@ -109,9 +112,15 @@
       </item>
       <item path="Simulator.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="Utils.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="Utils.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="Vertex.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="Vertex.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="data/OutputDirStructure" ex="false" tool="3" flavor2="0">
       </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -170,9 +179,15 @@
       </item>
       <item path="Simulator.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="Utils.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="Utils.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="Vertex.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="Vertex.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="data/OutputDirStructure" ex="false" tool="3" flavor2="0">
       </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>

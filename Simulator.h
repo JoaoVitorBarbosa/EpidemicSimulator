@@ -18,6 +18,7 @@
 #include <map>
 #include <vector>
 #include <queue>
+#include "Utils.h"
 #include "RandomWalk.h"
 #include "ManipulaGrafo.h"
 #include "Vertex.h"

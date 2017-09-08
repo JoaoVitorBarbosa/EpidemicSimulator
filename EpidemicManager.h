@@ -16,6 +16,7 @@
 #ifndef EPIDEMICMANAGER_H
 #define EPIDEMICMANAGER_H
 
+#include "Utils.h"
 #include "Params.h"
 #include "Simulator.h"
 #include "GraphGenerator.h"
@@ -50,10 +51,6 @@ private:
     /// \param graph 
     /// \param run Represents id of run
     void runThreadSimulation(Params params, std::string paramsStr, ManipulaGrafoV graph, int run);
-    
-    /// Creates Directory to save files
-    /// \param directory
-    void createDirectory(std::string directory);
     
     /// Boost accumulator used to store duration of epidemic
     boost::accumulators::accumulator_set<double, boost::accumulators::features<boost::accumulators::tag::mean, boost::accumulators::tag::variance>> timeAccumulator;

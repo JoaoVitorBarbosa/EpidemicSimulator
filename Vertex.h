@@ -33,7 +33,10 @@ class Vertex {
     
 public:
     std::string fileNameTimeResult;
-
+    
+    // directory to save all vertex data
+    std::string outputDir;
+    
     Vertex();
     Vertex(int rwinf_0, double p, int code, int _kMax, std::string _dirToSave);
     ~Vertex();

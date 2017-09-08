@@ -41,6 +41,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/RandomGenerator.o \
 	${OBJECTDIR}/RandomWalk.o \
 	${OBJECTDIR}/Simulator.o \
+	${OBJECTDIR}/Utils.o \
 	${OBJECTDIR}/Vertex.o \
 	${OBJECTDIR}/main.o
 
@@ -98,6 +99,11 @@ ${OBJECTDIR}/Simulator.o: Simulator.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Simulator.o Simulator.cpp
+
+${OBJECTDIR}/Utils.o: Utils.cpp
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Utils.o Utils.cpp
 
 ${OBJECTDIR}/Vertex.o: Vertex.cpp
 	${MKDIR} -p ${OBJECTDIR}

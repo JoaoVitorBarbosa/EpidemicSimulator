@@ -34,7 +34,7 @@ void EpidemicManager::startSimulation(Params params, std::string strParams) {
     std::string fName = std::to_string(1900 + ltm->tm_year) + "-" + std::to_string(1 + ltm->tm_mon) + "-" + std::to_string(ltm->tm_mday) + "-" + std::to_string(ltm->tm_hour) + std::to_string(ltm->tm_min) + std::to_string(1 + ltm->tm_sec);
 
     params.OutputDir = params.OutputDir + "/" + fName;
-    this->createDirectory(params.OutputDir);
+    Utils::createDirectory(params.OutputDir);
 
     std::cout << "Starting simulation" << "\n";
 
@@ -64,7 +64,7 @@ void EpidemicManager::runThreadSimulation(Params params, std::string strParams, 
 
     Params paramsR = params;
     paramsR.OutputDir = paramsR.OutputDir + "/Round " + std::to_string(run);
-    this->createDirectory(paramsR.OutputDir);
+    Utils::createDirectory(paramsR.OutputDir);
 
     Simulator * sim = new Simulator(paramsR, strParams, graph);
     sim->process();
@@ -73,7 +73,7 @@ void EpidemicManager::runThreadSimulation(Params params, std::string strParams, 
     infectionsAccumulator(sim->infectionTimes);
 
     std::string analysisDir = sim->outputDir + "/Analysis";
-    this->createDirectory(analysisDir);
+    Utils::createDirectory(analysisDir);
 
     EpidemicAnalysis * ep = new EpidemicAnalysis(analysisDir);
     ep->params = params;
@@ -81,12 +81,12 @@ void EpidemicManager::runThreadSimulation(Params params, std::string strParams, 
     ep->randomWalkStateTimeSeries(sim->fileNameNumberRandomWalkStates);
 
     ep->outputDir = analysisDir + "/RandomWalks";
-    this->createDirectory(ep->outputDir);
+    Utils::createDirectory(ep->outputDir);
     for (int i = 0; i < sim->randomWalks.size(); i++)
         ep->analysisStateTime(sim->randomWalks.at(i)->fileNameParmResult, std::to_string(i));
 
     ep->outputDir = analysisDir + "/Vertices";
-    this->createDirectory(ep->outputDir);
+    Utils::createDirectory(ep->outputDir);
     
     // CONTRACTED AND SUSCEPTIBLE NOT CREATED TO VERTICES
     //for (int i = 0; i < sim->vertices.size(); i++)
@@ -99,11 +99,4 @@ void EpidemicManager::runThreadSimulation(Params params, std::string strParams, 
     delete ep;
 
     std::cout << "--------- END ROUND " << run << " --------- \n";
-}
-
-void EpidemicManager::createDirectory(std::string directory) {
-    boost::filesystem::path dir(directory.c_str());
-    if (boost::filesystem::create_directory(dir)) {
-        std::cout << "Directory " << directory << " created successfully" << "\n";
-    }
 }
