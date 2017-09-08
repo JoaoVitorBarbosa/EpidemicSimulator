@@ -33,15 +33,36 @@
 class Simulator {
     RandomGenerator rg;
 
-    int num_Infecteds;
+    int num_Infected;
+    int num_Contracted;
     int num_Inf_Events;
     int timeLimit;
     int rounds;
+    
     double timeLastNumberInfect;
+    /// Stores Time interval that system had k infected
     std::map<int, double> infectedInterval;
+    
+    double timeLastNumberContracted;
+    /// Stores Time interval that system had k contracted
+    std::map<int, double> contractedInterval;
+    
+    double timeLastNumberSusceptible;
+    /// Stores Time interval that system had k suscetible
+    std::map<int, double> susceptibleInterval;
 
     void writeInfectInterval();
+    void writeContractedInterval();
+    void writeSusceptibleInterval();
+    
+    /// Changes number of infected e compute time interval. Increase or decrease by 1.
+    /// \param num_Infec New number of infected
     void changeNumberInfected(int num_Infec);
+    
+    /// Changes number of contracted e compute time interval. Increase or decrease by 1.
+    /// \param num_Contracted New number of contracted
+    void changeNumberContracted(int num_Contracted);
+    
     void processWalk(Event evt);
     void processInfect(Event evt);
     void processHeal(Event evt);
@@ -60,6 +81,8 @@ public:
     int k;
     int infectionTimes;
     std::string fileNameInfectInterval;
+    std::string fileNameContractedInterval;
+    std::string fileNameSusceptibleInterval;
     std::string fileNameNumberRandomWalkStates;
     std::string outputDir;
     std::vector<RandomWalk*> randomWalks;

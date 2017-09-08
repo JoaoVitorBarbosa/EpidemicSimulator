@@ -16,11 +16,45 @@ std::string GetCurrentWorkingDir(void) {
 
 void Simulator::changeNumberInfected(int num_Infec) {
     double interval = time - timeLastNumberInfect;
-    double actInterval = infectedInterval[num_Infecteds];
-    infectedInterval[num_Infecteds] = interval + actInterval;
+    double cInterval = infectedInterval[num_Infected];
+    infectedInterval[num_Infected] = interval + cInterval;
 
     timeLastNumberInfect = time;
-    num_Infecteds = num_Infec;
+    
+    // number of infected decreases and susceptible increase
+    if(num_Infec < num_Infected)
+    {
+        interval = time - timeLastNumberSusceptible;
+        int num_Susceptible = k - num_Infected - num_Contracted;
+        cInterval = susceptibleInterval[num_Susceptible];
+        susceptibleInterval[num_Susceptible] = interval + cInterval;
+
+        timeLastNumberSusceptible = time;
+    }
+        
+    num_Infected = num_Infec;
+}
+
+void Simulator::changeNumberContracted(int num_Cont)
+{
+    double interval = time - timeLastNumberContracted;
+    double cInterval = contractedInterval[num_Contracted];
+    contractedInterval[num_Contracted] = interval + cInterval;
+
+    timeLastNumberContracted = time;
+    
+    // number of infected decreases and susceptible increase
+    if(num_Cont > num_Contracted)
+    {
+        interval = time - timeLastNumberSusceptible;
+        int num_Susceptible = k - num_Infected - num_Contracted;
+        cInterval = susceptibleInterval[num_Susceptible];
+        susceptibleInterval[num_Susceptible] = interval + cInterval;
+
+        timeLastNumberSusceptible = time;
+    }
+        
+    num_Contracted = num_Cont;
 }
 
 std::string Simulator::eventToString(EventType evt) {
@@ -64,6 +98,7 @@ void Simulator::setupRandomWalks(RwParam rwParams) {
         randomWalks.push_back(rw);
 
         rw->setRwPosition(vertices[vp]->setRandomWalk(rw));
+        
         if (rw->getState() == State::Infected) {
             double t_recover = time + rg.exponential(rw->getGama());
             Event evtRec(t_recover, i, EventType::Recover);
@@ -72,11 +107,14 @@ void Simulator::setupRandomWalks(RwParam rwParams) {
             rw->insertTimeInfected(t_recover - time);
 
             vertices[vp]->increaseRwInfecteds(time);
-            changeNumberInfected(num_Infecteds + 1);
+            changeNumberInfected(num_Infected + 1);
 
             rw->setTimeStateChange(0.0, 2);
         } else
             rw->setTimeStateChange(0.0, 0);
+        
+        if(rw->getState() == State::Contracted)
+            changeNumberContracted(num_Contracted + 1);
 
         //walk event
         double timeToWalk = rg.exponential(randomWalks[i]->getLambda());
@@ -111,8 +149,11 @@ Simulator::Simulator(Params params, std::string jsonStr, ManipulaGrafoV _graph) 
     this->graph = _graph;
     time = 0;
     num_Inf_Events = 0;
-    num_Infecteds = 0;
+    num_Infected = 0;
+    num_Contracted = 0;
     timeLastNumberInfect = 0;
+    timeLastNumberContracted = 0;
+    timeLastNumberSusceptible = 0;
 
     // create new directory for each execution
     time_t now = std::time(0);
@@ -126,6 +167,8 @@ Simulator::Simulator(Params params, std::string jsonStr, ManipulaGrafoV _graph) 
     }
 
     fileNameInfectInterval = outputDir + "/infectedsInterval.txt";
+    fileNameContractedInterval = outputDir + "/contractedInterval.txt";
+    fileNameSusceptibleInterval = outputDir + "/susceptibleInterval.txt";
     
     // create file to store results
     fileNameNumberRandomWalkStates = outputDir + "/system_results.txt";
@@ -151,8 +194,10 @@ Simulator::Simulator(int _k, int _timeLimt, int _rounds, std::string rede) {
     graph.lerArquivo(rede, false);
     time = 0;
     timeLastNumberInfect = 0;
+    timeLastNumberContracted = 0;
+    timeLastNumberSusceptible = 0;
     num_Inf_Events = 0;
-    num_Infecteds = 0;
+    num_Infected = 0;
 
     fileNameNumberRandomWalkStates = "../data/output/system_results.txt";
     std::ofstream arq;
@@ -207,6 +252,9 @@ void Simulator::infect(Vertex * vertex, Event evt) {
 
                 History history((*it)->getCode(), (*it)->getVertex(), time, (*it)->stateToString(), "-", "Infected", evt.randomwalk);
                 (*it)->writeEvent(history);
+                
+                // increase number of contracted
+                changeNumberContracted(num_Contracted + 1);
             }
         }
         it++;
@@ -231,6 +279,9 @@ void Simulator::beInfected(Vertex * v, Event evt) {
 
         History history(rw->getCode(), rw->getVertex(), time, rw->stateToString(), "-", "Infected");
         rw->writeEvent(history);
+        
+        // increase number of contracted
+        changeNumberContracted(num_Contracted + 1);
     }
 }
 
@@ -294,9 +345,12 @@ void Simulator::processInfect(Event evt) {
     Vertex * vertex = vertices.at(rw->getVertex());
     vertex->increaseRwInfecteds(time);
 
-    changeNumberInfected(num_Infecteds + 1);
+    changeNumberInfected(num_Infected + 1);
     num_Inf_Events--;
 
+    // increase number of contracted
+    changeNumberContracted(num_Contracted - 1);
+    
     infect(vertex, evt);
 }
 
@@ -308,7 +362,7 @@ void Simulator::processHeal(Event evt) {
     History history(rw->getCode(), rw->getVertex(), time, rw->stateToString(), eventToString(evt.type), "-");
     rw->writeEvent(history);
 
-    changeNumberInfected(num_Infecteds - 1);
+    changeNumberInfected(num_Infected - 1);
 
     Vertex * vertex = vertices.at(rw->getVertex());
     vertex->decreaseRwInfecteds(time);
@@ -320,7 +374,7 @@ void Simulator::writeNumberRwStatePerTime() {
     std::ofstream arq;
     arq.open(fileNameNumberRandomWalkStates, std::ofstream::out | std::ofstream::app);
 
-    arq << std::fixed << time << "," << num_Infecteds << "," << num_Inf_Events << "," << k - (num_Infecteds + num_Inf_Events) << std::endl;
+    arq << std::fixed << time << "," << num_Infected << "," << num_Inf_Events << "," << k - (num_Infected + num_Inf_Events) << std::endl;
 
     arq.close();
 }
@@ -335,12 +389,34 @@ void Simulator::writeInfectInterval(){
     arq.close();
 }
 
+void Simulator::writeContractedInterval()
+{
+    std::ofstream arq;
+    arq.open(fileNameContractedInterval, std::ofstream::out | std::ofstream::app);
+
+    for(int i = 0; i < k; i++)
+        arq << i << "," << contractedInterval[i]/time << std::endl;
+
+    arq.close();
+}
+    
+void Simulator::writeSusceptibleInterval()
+{
+    std::ofstream arq;
+    arq.open(fileNameSusceptibleInterval, std::ofstream::out | std::ofstream::app);
+
+    for(int i = 0; i < k; i++)
+        arq << i << "," << susceptibleInterval[i]/time << std::endl;
+
+    arq.close();
+}
+
 void Simulator::process() {
     std::cout << "Begin epidemic" << std::endl;
     double old_percentual = 0.0;
     while (!events.empty()) {
 
-        if (time > timeLimit || (num_Inf_Events == 0 && num_Infecteds == 0))
+        if (time > timeLimit || (num_Inf_Events == 0 && num_Infected == 0))
             break;
 
         Event evt = getEventTop();
@@ -379,6 +455,8 @@ void Simulator::process() {
     }
     
     writeInfectInterval();
+    writeContractedInterval();
+    writeSusceptibleInterval();
     
     for (int i = 0; i < vertices.size(); i++) {
         vertices[i]->writeTimeInfected(time);

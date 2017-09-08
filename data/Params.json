@@ -15,10 +15,10 @@
         },
     "VertexParam":{
             "p": 0.5,
-            "vertexParamArray": "[[0,0.0],[1,1.0],[2,1.0],[3,1.0]]"
+            "vertexParamArray": "[]"
         },
     "p": 0.5,
-    "Runs": 4,
+    "Runs": 1,
     "Time": 10000,
     "OutputDir": "/home/joao/Mestrado/Simulador/Source Code/data/output"
 }

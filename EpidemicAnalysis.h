@@ -57,7 +57,7 @@ public:
     /// \param arquivo (csv) stores snapshot of time, rw_infec, rw_cont, rw_inf
     void randomWalkStateTimeSeries(std::string arquivo);
     
-    void infectedsGraphic(std::string filepath, std::string title);
+    void infectedGraphic(std::string filepathInfected, std::string filepathContracted, std::string filepathSusceptible, std::string title);
 };
 
 

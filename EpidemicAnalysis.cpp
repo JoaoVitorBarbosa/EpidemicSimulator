@@ -283,7 +283,8 @@ void EpidemicAnalysis::analysisStateTime(std::string filepath, std::string title
     createStateStatistics(pairs, title);
 }
 
-void EpidemicAnalysis::infectedsGraphic(std::string filepath, std::string title) {
+std::vector<std::pair<int,double>> getStateInterval(std::string filepath)
+{
     std::vector<std::pair<int,double>> timeStampStatesChange;
     
     std::ifstream arq;
@@ -314,8 +315,17 @@ void EpidemicAnalysis::infectedsGraphic(std::string filepath, std::string title)
 
     arq.close();
     
-    std::string filename = outputDir + "/infecteds" + title + ".png";
-    //../data/EpidemicAnalysis/infectInterval.png
+    return timeStampStatesChange;
+}
+
+
+void EpidemicAnalysis::infectedGraphic(std::string filepathInfected, std::string filepathContracted, std::string filepathSusceptible, std::string title) {
+
+    auto timeStampInfectedChange = getStateInterval(filepathInfected);
+    auto timeStampContractedChange = getStateInterval(filepathContracted);
+    auto timeStampSusceptibleChange = getStateInterval(filepathSusceptible);
+    
+    std::string filename = outputDir + "/StatesDistribution" + title + ".png";
     
     Gnuplot gp;
 
@@ -326,8 +336,10 @@ void EpidemicAnalysis::infectedsGraphic(std::string filepath, std::string title)
     gp << "set term png \n";
     gp << "set output '" + filename + "' \n";
     //gp << "set logscale y \n";
-    gp << "plot '-' with lines title 'infectados'\n";
+    gp << "plot '-' title 'Susceptible' with lines lt rgb '#00FF00', '-' title 'Contracted' with lines lt rgb '#0000FF', '-' title 'Infected' with lines lt rgb '#FF0000' \n";
 
-    gp.send1d(timeStampStatesChange);   
+    gp.send1d(timeStampSusceptibleChange);   
+    gp.send1d(timeStampContractedChange);   
+    gp.send1d(timeStampInfectedChange);   
     
 }

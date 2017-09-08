@@ -30,8 +30,8 @@ void EpidemicManager::startSimulation(Params params, std::string strParams) {
 
     time_t now = std::time(0);
     tm *ltm = localtime(&now);
-    std::string fName = std::to_string(ltm->tm_mday) + "-" + std::to_string(1 + ltm->tm_mon) + "-" + std::to_string(1900 + ltm->tm_year) + " " + std::to_string(ltm->tm_hour) + ":" + std::to_string(ltm->tm_min) + ":" + std::to_string(1 + ltm->tm_sec);
-    //std::string fName = std::to_string(1900 + ltm->tm_year) + std::to_string(1 + ltm->tm_mon) + std::to_string(ltm->tm_mday) + std::to_string(ltm->tm_hour) + std::to_string(ltm->tm_min) + std::to_string(1 + ltm->tm_sec);
+    //std::string fName = std::to_string(ltm->tm_mday) + "-" + std::to_string(1 + ltm->tm_mon) + "-" + std::to_string(1900 + ltm->tm_year) + " " + std::to_string(ltm->tm_hour) + ":" + std::to_string(ltm->tm_min) + ":" + std::to_string(1 + ltm->tm_sec);
+    std::string fName = std::to_string(1900 + ltm->tm_year) + "-" + std::to_string(1 + ltm->tm_mon) + "-" + std::to_string(ltm->tm_mday) + "-" + std::to_string(ltm->tm_hour) + std::to_string(ltm->tm_min) + std::to_string(1 + ltm->tm_sec);
 
     params.OutputDir = params.OutputDir + "/" + fName;
     this->createDirectory(params.OutputDir);
@@ -77,7 +77,7 @@ void EpidemicManager::runThreadSimulation(Params params, std::string strParams, 
 
     EpidemicAnalysis * ep = new EpidemicAnalysis(analysisDir);
     ep->params = params;
-    ep->infectedsGraphic(sim->fileNameInfectInterval, "System");
+    ep->infectedGraphic(sim->fileNameInfectInterval, sim->fileNameContractedInterval, sim->fileNameSusceptibleInterval,  "System");
     ep->randomWalkStateTimeSeries(sim->fileNameNumberRandomWalkStates);
 
     ep->outputDir = analysisDir + "/RandomWalks";
@@ -87,8 +87,10 @@ void EpidemicManager::runThreadSimulation(Params params, std::string strParams, 
 
     ep->outputDir = analysisDir + "/Vertices";
     this->createDirectory(ep->outputDir);
-    for (int i = 0; i < sim->vertices.size(); i++)
-        ep->infectedsGraphic(sim->vertices.at(i)->fileNameTimeResult, std::to_string(i));
+    
+    // CONTRACTED AND SUSCEPTIBLE NOT CREATED TO VERTICES
+    //for (int i = 0; i < sim->vertices.size(); i++)
+        //ep->infectedGraphic(sim->vertices.at(i)->fileNameTimeResult,  std::to_string(i));
 
     ep->outputDir = analysisDir;
     ep->analysisAll(sim->outputDir, sim->k);
