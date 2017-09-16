@@ -62,13 +62,16 @@ void EpidemicManager::startSimulation(Params params, std::string strParams) {
 void EpidemicManager::runThreadSimulation(Params params, std::string strParams, ManipulaGrafoV graph, int run) {
     std::cout << "--------- ROUND " << run << " --------- \n";
 
+    // creating directory
     Params paramsR = params;
     paramsR.OutputDir = paramsR.OutputDir + "/Round " + std::to_string(run);
     Utils::createDirectory(paramsR.OutputDir);
 
+    // starting simulation
     Simulator * sim = new Simulator(paramsR, strParams, graph);
     sim->process();
 
+    // starting analysis
     timeAccumulator(sim->time);
     infectionsAccumulator(sim->infectionTimes);
 
@@ -83,7 +86,10 @@ void EpidemicManager::runThreadSimulation(Params params, std::string strParams, 
     ep->outputDir = analysisDir + "/RandomWalks";
     Utils::createDirectory(ep->outputDir);
     for (int i = 0; i < sim->randomWalks.size(); i++)
+    {
         ep->analysisStateTime(sim->randomWalks.at(i)->fileNameParmResult, std::to_string(i));
+        ep->RandomWalkWalkingCCDF(sim->randomWalks.at(i)->fileNameWalkingTimes, std::to_string(i));
+    }
 
     ep->outputDir = analysisDir + "/Vertices";
     Utils::createDirectory(ep->outputDir);

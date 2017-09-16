@@ -17,6 +17,10 @@
 #include <stdio.h>
 #include <boost/filesystem.hpp>
 
+
+// create debug level
+// create trace
+
 class Utils {
 public:
     Utils();

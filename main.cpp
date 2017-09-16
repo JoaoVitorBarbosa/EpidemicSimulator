@@ -129,37 +129,6 @@ void testBipartiteGraph() {
 
 int main(int argc, char** argv) {
 
-    /*std::thread first([]() {
-        int i = 0;
-        for (int j = 0; j < 1000000; j++) {
-            i = j;
-        }
-    });
-    std::thread second([]() {
-        int i = 0;
-        for (int j = 0; j < 1000000; j++) {
-            i = j;
-        }
-    });
-    
-    std::thread third([]() {
-        int i = 0;
-        for (int j = 0; j < 1000000; j++) {
-            i = j;
-        }
-    });
-
-    std::cout << "main, foo and bar now execute concurrently...\n" << std::endl;
-
-
-    first.join();
-    second.join();
-    third.join();
-
-    std::cout << "foo and bar completed.\n";
-
-    return 0;*/
-
     if (argc < 2) {
         std::cerr << "Missing Parameter file argument." << std::endl;
         //return 0;

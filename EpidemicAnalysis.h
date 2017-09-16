@@ -58,6 +58,10 @@ public:
     void randomWalkStateTimeSeries(std::string arquivo);
     
     void infectedGraphic(std::string filepathInfected, std::string filepathContracted, std::string filepathSusceptible, std::string title);
+    
+    void RandomWalkWalkingCCDF(std::string filepath, std::string randomWalk);
+    
+    void readWalkingTime(std::string filename, std::multiset<double> &timeStampWalking);
 };
 
 

@@ -45,7 +45,7 @@
                    kind="IMPORTANT_FILES_FOLDER">
       <itemPath>Makefile</itemPath>
     </logicalFolder>
-    <itemPath>data/OutputDirStructure</itemPath>
+    <itemPath>data/OutputDirStructure.txt</itemPath>
     <itemPath>Data/Params.json</itemPath>
   </logicalFolder>
   <projectmakefile>Makefile</projectmakefile>
@@ -120,7 +120,7 @@
       </item>
       <item path="Vertex.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="data/OutputDirStructure" ex="false" tool="3" flavor2="0">
+      <item path="data/OutputDirStructure.txt" ex="false" tool="3" flavor2="0">
       </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -187,7 +187,7 @@
       </item>
       <item path="Vertex.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="data/OutputDirStructure" ex="false" tool="3" flavor2="0">
+      <item path="data/OutputDirStructure.txt" ex="false" tool="3" flavor2="0">
       </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>

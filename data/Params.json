@@ -19,6 +19,6 @@
         },
     "p": 0.5,
     "Runs": 1,
-    "Time": 10000,
+    "Time": 5000,
     "OutputDir": "/home/joao/Mestrado/Simulador/Source Code/data/output"
 }

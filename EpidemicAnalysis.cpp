@@ -138,6 +138,54 @@ void EpidemicAnalysis::createStateStatistics(std::vector<std::pair<double, int> 
     arq.close();
 }
 
+void EpidemicAnalysis::readWalkingTime(std::string filename, std::multiset<double> &timeStampWalking) {
+    std::ifstream arq;
+    arq.open(filename.c_str());
+
+    std::string linha = "";
+    double lastTime = 0.0;
+    
+    while (!arq.eof()) {
+
+        std::string line;
+        std::getline(arq, line);
+
+        if (line.find('#') == 0)
+            continue;
+
+        double time = atof(line.c_str());
+        double interval = time - lastTime;
+        if(interval > 0)
+            timeStampWalking.insert(interval);
+            
+        lastTime = time;
+    }
+
+    arq.close();
+}
+
+void EpidemicAnalysis::RandomWalkWalkingCCDF(std::string filepath, std::string randomWalk)
+{
+    std::multiset<double> walking_segments;
+    readWalkingTime(filepath, walking_segments);
+    
+    std::vector<std::pair<double, double> > walkingPts = getCCDFPoints(walking_segments);
+
+    std::string filename = this->outputDir + "/CCDF_walking" + randomWalk + ".png";
+    
+    Gnuplot gp;
+
+    gp << "set title 'CCDF do tempo de caminhada\n";
+    gp << "set xlabel 'Tempo até próximo passo' \n";
+    gp << "set ylabel 'Fração' \n";
+    gp << "set term png \n";
+    gp << "set output '" + filename + "' \n";
+    gp << "set logscale y \n";
+    gp << "plot '-' title 'CCDF do tempo de caminhada' with lines lt rgb '#00FF00' \n";
+
+    gp.send1d(walkingPts);
+}
+
 std::vector<std::pair<double, double> > EpidemicAnalysis::getCCDFPoints(std::multiset<double> elements) {
     std::vector<std::pair<double, double> > xy_pts;
     int i = 0;

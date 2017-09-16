@@ -79,6 +79,7 @@ public:
     bool infectEvent; 
     std::string fileName;
     std::string fileNameParmResult;
+    std::string fileNameWalkingTimes;
     std::string outputDir;
 
     // store time intervals that rw spend in infected state

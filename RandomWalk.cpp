@@ -21,6 +21,7 @@ RandomWalk::RandomWalk(int _vertex, double _lambda, double _gama, double _tau, S
     std::string _name = "RW_" + std::to_string(code) + "_" + std::to_string(std::chrono::system_clock::now().time_since_epoch().count());
     fileName = outputDir + "/" + _name + ".txt";
     fileNameParmResult = outputDir + "/RW_" + std::to_string(code) + "_Results.txt";
+    fileNameWalkingTimes = outputDir + "/RW" + std::to_string(code) + "_walkingTimes.txt";
 
     std::ofstream arq;
 
@@ -34,6 +35,10 @@ RandomWalk::RandomWalk(int _vertex, double _lambda, double _gama, double _tau, S
     arq.open(fileNameParmResult);
     arq << "# Parameters: Lambda: " << lambda << ", Gama: " << gama << ", Tau: " << tau << '\n';
     arq << "# time,state_changed" << '\n';
+    arq.close();
+    
+    arq.open(fileNameWalkingTimes);
+    arq << "# Walking Times" << std::endl;
     arq.close();
 
 
@@ -118,12 +123,16 @@ void RandomWalk::writeEvent(History history) {
 
 void RandomWalk::writeFile(History history) {
     std::ofstream arq;
-
     arq.open(fileName, std::ofstream::out | std::ofstream::app);
-
     arq << std::fixed << history.time << "," << history.event << "," << history.vertex << "," << history.state << "," << history.effect << "," << history.getRWInfected() << '\n';
-
     arq.close();
+    
+    if(history.event == "Walk")
+    {
+        arq.open(fileNameWalkingTimes, std::ofstream::out | std::ofstream::app);
+        arq << std::fixed << history.time << std::endl;
+        arq.close();
+    }
 }
 
 void RandomWalk::insertTimeWalking(double _t) {
