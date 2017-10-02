@@ -6,12 +6,13 @@
 #include "EpidemicManager.h"
 
 EpidemicManager::EpidemicManager() {
-
+    aggregate_time_ms = 0;
 }
 
-void EpidemicManager::startSimulation(Params params, std::string strParams) {
+ManipulaGrafoV EpidemicManager::create_graph(Params params)
+{
     ManipulaGrafoV graph;
-
+    
     switch (params.Graph.Type) {
         case GraphType::File:
             graph.lerArquivo(params.Graph.path, false);
@@ -27,11 +28,14 @@ void EpidemicManager::startSimulation(Params params, std::string strParams) {
         default:
             break;
     }
+    
+    return graph;
+}
 
-    time_t now = std::time(0);
-    tm *ltm = localtime(&now);
-    //std::string fName = std::to_string(ltm->tm_mday) + "-" + std::to_string(1 + ltm->tm_mon) + "-" + std::to_string(1900 + ltm->tm_year) + " " + std::to_string(ltm->tm_hour) + ":" + std::to_string(ltm->tm_min) + ":" + std::to_string(1 + ltm->tm_sec);
-    std::string fName = std::to_string(1900 + ltm->tm_year) + std::to_string(1 + ltm->tm_mon) + std::to_string(ltm->tm_mday) + std::to_string(ltm->tm_hour) + std::to_string(ltm->tm_min) + std::to_string(1 + ltm->tm_sec);
+void EpidemicManager::start_simulation(Params params, std::string strParams) {
+    ManipulaGrafoV graph = create_graph(params);
+
+    std::string fName = Utils::datetime_now_to_string();
 
     params.OutputDir = params.OutputDir + "/" + fName;
     Utils::createDirectory(params.OutputDir);
@@ -43,23 +47,25 @@ void EpidemicManager::startSimulation(Params params, std::string strParams) {
     std::thread * threads = new std::thread[num_threads];
 
     for (int i = 0; i < params.Runs; i++) {
-        threads[i] = std::thread(&EpidemicManager::runThreadSimulation, this, params, strParams, graph, i);
+        threads[i] = std::thread(&EpidemicManager::run_simulation_in_thread, this, params, strParams, graph, i);
     }
 
     for (int i = 0; i < params.Runs; i++)
         threads[i].join();
+    
+    std::cout << "Duração média da epidemia " << (aggregate_time_ms/params.Runs) / 1000.00 << "s" << std::endl;
 
     delete [] threads;
 
-    std::cout << "Tempo médio de epidemia: " << boost::accumulators::mean(timeAccumulator) << std::endl;
+    /*std::cout << "Tempo médio de epidemia: " << boost::accumulators::mean(timeAccumulator) << std::endl;
     std::cout << "Desvio padrão do tempo de epidemia: " << std::sqrt(boost::accumulators::variance(timeAccumulator)) << std::endl;
 
     std::cout << "Média de infecções: " << boost::accumulators::mean(infectionsAccumulator) << std::endl;
-    std::cout << "Desvio padrão do número de infecções: " << std::sqrt(boost::accumulators::variance(infectionsAccumulator)) << std::endl;
+    std::cout << "Desvio padrão do número de infecções: " << std::sqrt(boost::accumulators::variance(infectionsAccumulator)) << std::endl;*/
 
 }
 
-void EpidemicManager::runThreadSimulation(Params params, std::string strParams, ManipulaGrafoV graph, int run) {
+void EpidemicManager::run_simulation_in_thread(Params params, std::string strParams, ManipulaGrafoV graph, int run) {
     std::cout << "--------- ROUND " << run << " --------- \n";
 
     // creating directory
@@ -67,9 +73,15 @@ void EpidemicManager::runThreadSimulation(Params params, std::string strParams, 
     paramsR.OutputDir = paramsR.OutputDir + "/Round " + std::to_string(run);
     Utils::createDirectory(paramsR.OutputDir);
 
+    // get initial time
+    std::chrono::high_resolution_clock::time_point begin_time = std::chrono::high_resolution_clock::now();
+
     // starting simulation
     Simulator * sim = new Simulator(paramsR, strParams, graph);
     sim->process();
+    
+    // get final time
+    std::chrono::high_resolution_clock::time_point end_time = std::chrono::high_resolution_clock::now();
 
     // starting analysis
     timeAccumulator(sim->time);
@@ -80,29 +92,39 @@ void EpidemicManager::runThreadSimulation(Params params, std::string strParams, 
 
     EpidemicAnalysis * ep = new EpidemicAnalysis(analysisDir);
     ep->params = params;
-    ep->infectedGraphic(sim->fileNameInfectInterval, sim->fileNameContractedInterval, sim->fileNameSusceptibleInterval,  "System");
+    ep->stateDistribution(sim->fileNameInfectInterval, sim->fileNameContractedInterval, sim->fileNameSusceptibleInterval,  "System");
     ep->randomWalkStateTimeSeries(sim->fileNameNumberRandomWalkStates);
 
     ep->outputDir = analysisDir + "/RandomWalks";
     Utils::createDirectory(ep->outputDir);
     for (int i = 0; i < sim->randomWalks.size(); i++)
     {
-        ep->analysisStateTime(sim->randomWalks.at(i)->fileNameParmResult, std::to_string(i));
+        ep->getRandomWalkCCDFAndStatistics(sim->randomWalks.at(i)->fileNameParmResult, std::to_string(i));
         ep->RandomWalkWalkingCCDF(sim->randomWalks.at(i)->fileNameWalkingTimes, std::to_string(i));
     }
 
     ep->outputDir = analysisDir + "/Vertices";
     Utils::createDirectory(ep->outputDir);
     
-    // CONTRACTED AND SUSCEPTIBLE NOT CREATED TO VERTICES
+    // CONTRACTED AND SUSCEPTIBLE NOT CREATED FOR VERTICES
     //for (int i = 0; i < sim->vertices.size(); i++)
-        //ep->infectedGraphic(sim->vertices.at(i)->fileNameTimeResult,  std::to_string(i));
+        //ep->stateDistribution(sim->vertices.at(i)->fileNameTimeResult,  std::to_string(i));
 
     ep->outputDir = sim->outputDir + "/Analysis";
-    ep->analysisAll(sim->outputDir + "/RandomWalks", sim->k);
+    ep->getSystemCCDFAndStatistics(sim->outputDir + "/RandomWalks", sim->k);
 
     delete sim;
     delete ep;
 
     std::cout << "--------- END ROUND " << run << " --------- \n";
+    
+    int duration = std::chrono::duration_cast<std::chrono::milliseconds>( end_time - begin_time ).count();
+    
+    std::mutex mtx;
+    mtx.lock();
+    aggregate_time_ms += duration;
+    mtx.unlock();
+    
+    std::cout << "Duração da epidemia " << duration/1000. << "s" << std::endl;
+
 }

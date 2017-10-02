@@ -28,6 +28,8 @@
 #include <boost/accumulators/statistics.hpp>
 #include <ctime>
 #include <thread>
+#include <chrono>
+#include <mutex>
 
 using namespace std;
 
@@ -41,16 +43,24 @@ public:
     /// Starts Simulation
     /// \param params parameters for simulation
     /// \param paramsStr parameters in string form to print
-    void startSimulation(Params params, std::string paramsStr);
+    void start_simulation(Params params, std::string paramsStr);
     
 private:
+    
+    /// Create graph according to specified in params
+    /// \param params
+    /// \return 
+    ManipulaGrafoV create_graph(Params params);
     
     /// Run a simulation inside of a thread
     /// \param params
     /// \param paramsStr Parameter that will be printed in log
     /// \param graph 
     /// \param run Represents id of run
-    void runThreadSimulation(Params params, std::string paramsStr, ManipulaGrafoV graph, int run);
+    void run_simulation_in_thread(Params params, std::string paramsStr, ManipulaGrafoV graph, int run);
+    
+    /// duration of all runs
+    int aggregate_time_ms;
     
     /// Boost accumulator used to store duration of epidemic
     boost::accumulators::accumulator_set<double, boost::accumulators::features<boost::accumulators::tag::mean, boost::accumulators::tag::variance>> timeAccumulator;

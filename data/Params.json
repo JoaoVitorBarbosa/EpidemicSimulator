@@ -6,8 +6,8 @@
                 "n2": 10
              },
     "RwParam": {
-            "k": 25,
-            "ki": 10,
+            "k": 35,
+            "ki": 5,
             "lambda": 2,
             "gama": 0.1,
             "tau": 0.5,
@@ -18,7 +18,7 @@
             "vertexParamArray": "[]"
         },
     "p": 0.5,
-    "Runs": 1,
-    "Time": 5000,
+    "Runs": 5,
+    "Time": 1000,
     "OutputDir": "/home/joao/Mestrado/Simulador/Source Code/data/output"
 }

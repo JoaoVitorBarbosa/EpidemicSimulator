@@ -22,6 +22,9 @@
 // create trace
 
 class Utils {
+private:
+    static std::string pad(int num);
+    
 public:
     Utils();
     Utils(const Utils& orig);
@@ -30,6 +33,8 @@ public:
     /// Creates Directory to save files
     /// \param directory
     static void createDirectory(std::string directory);
+    
+    static std::string datetime_now_to_string();
     
 private:
 

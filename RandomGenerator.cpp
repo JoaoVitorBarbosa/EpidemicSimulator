@@ -14,7 +14,7 @@ double RandomGenerator::exponential(double lambda) {
     return exp(mt);
 };
 
-void RandomGenerator::validateExponential(double rate, int n)
+void RandomGenerator::validate_exponential(double rate, int n)
 {
     double tax = rate;
     std::multimap<double,double> map;

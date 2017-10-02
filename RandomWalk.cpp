@@ -21,7 +21,7 @@ RandomWalk::RandomWalk(int _vertex, double _lambda, double _gama, double _tau, S
     std::string _name = "RW_" + std::to_string(code) + "_" + std::to_string(std::chrono::system_clock::now().time_since_epoch().count());
     fileName = outputDir + "/" + _name + ".txt";
     fileNameParmResult = outputDir + "/RW_" + std::to_string(code) + "_Results.txt";
-    fileNameWalkingTimes = outputDir + "/RW" + std::to_string(code) + "_walkingTimes.txt";
+    fileNameWalkingTimes = outputDir + "/RW_" + std::to_string(code) + "_walkingTimes.txt";
 
     std::ofstream arq;
 

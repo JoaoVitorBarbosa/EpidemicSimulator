@@ -33,7 +33,7 @@ public:
     /// mean, variance and median;
     /// \param rate
     /// \param n samples
-    void validateExponential(double rate, int n = 100000);
+    void validate_exponential(double rate, int n = 100000);
     
     /// Return true or false according Bernoulli
     /// \param p Bernoulli parameter

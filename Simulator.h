@@ -32,28 +32,25 @@
 
 
 class Simulator {
-    RandomGenerator rg;
 
+    RandomGenerator rg;
     int num_Infected;
     int num_Contracted;
     int num_Inf_Events;
     int timeLimit;
     int rounds;
-    
-    double timeLastNumberInfect;
+    double time_of_last_number_of_infected;
     /// Stores Time interval that system had k infected
-    std::map<int, double> infectedInterval;
-    
-    double timeLastNumberContracted;
+    std::map<int, double> infected_intervals;
+    double time_of_last_number_of_contracted;
     /// Stores Time interval that system had k contracted
-    std::map<int, double> contractedInterval;
-    
-    double timeLastNumberSusceptible;
+    std::map<int, double> contracted_intervals;
+    double time_of_last_number_of_susceptible;
     /// Stores Time interval that system had k suscetible
-    std::map<int, double> susceptibleInterval;
+    std::map<int, double> susceptible_intervals;
 
-    void writeInfectInterval();
-    void writeContractedInterval();
+    void write_infected_intervals();
+    void write_contracted_intervals();
     void writeSusceptibleInterval();
     
     /// Changes number of infected e compute time interval. Increase or decrease by 1.
@@ -64,11 +61,11 @@ class Simulator {
     /// \param num_Contracted New number of contracted
     void changeNumberContracted(int num_Contracted);
     
-    void processWalk(Event evt);
-    void processInfect(Event evt);
-    void processHeal(Event evt);
-    Event getEventTop();
-    void fillVertices(Params params);
+    void process_walk(Event evt);
+    void process_infect(Event evt);
+    void process_heal(Event evt);
+    Event get_top_event();
+    void fill_vertices(Params params);
     void setupRandomWalks(RwParam rwParams);
     void fillEvents();
     void infect(Vertex * v, Event evt);

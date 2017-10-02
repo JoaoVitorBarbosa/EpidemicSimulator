@@ -15,21 +15,21 @@ std::string GetCurrentWorkingDir(void) {
 }
 
 void Simulator::changeNumberInfected(int num_Infec) {
-    double interval = time - timeLastNumberInfect;
-    double cInterval = infectedInterval[num_Infected];
-    infectedInterval[num_Infected] = interval + cInterval;
+    double interval = time - time_of_last_number_of_infected;
+    double cInterval = infected_intervals[num_Infected];
+    infected_intervals[num_Infected] = interval + cInterval;
 
-    timeLastNumberInfect = time;
+    time_of_last_number_of_infected = time;
     
     // number of infected decreases and susceptible increase
     if(num_Infec < num_Infected)
     {
-        interval = time - timeLastNumberSusceptible;
+        interval = time - time_of_last_number_of_susceptible;
         int num_Susceptible = k - num_Infected - num_Contracted;
-        cInterval = susceptibleInterval[num_Susceptible];
-        susceptibleInterval[num_Susceptible] = interval + cInterval;
+        cInterval = susceptible_intervals[num_Susceptible];
+        susceptible_intervals[num_Susceptible] = interval + cInterval;
 
-        timeLastNumberSusceptible = time;
+        time_of_last_number_of_susceptible = time;
     }
         
     num_Infected = num_Infec;
@@ -37,21 +37,21 @@ void Simulator::changeNumberInfected(int num_Infec) {
 
 void Simulator::changeNumberContracted(int num_Cont)
 {
-    double interval = time - timeLastNumberContracted;
-    double cInterval = contractedInterval[num_Contracted];
-    contractedInterval[num_Contracted] = interval + cInterval;
+    double interval = time - time_of_last_number_of_contracted;
+    double cInterval = contracted_intervals[num_Contracted];
+    contracted_intervals[num_Contracted] = interval + cInterval;
 
-    timeLastNumberContracted = time;
+    time_of_last_number_of_contracted = time;
     
     // number of infected decreases and susceptible increase
     if(num_Cont > num_Contracted)
     {
-        interval = time - timeLastNumberSusceptible;
+        interval = time - time_of_last_number_of_susceptible;
         int num_Susceptible = k - num_Infected - num_Contracted;
-        cInterval = susceptibleInterval[num_Susceptible];
-        susceptibleInterval[num_Susceptible] = interval + cInterval;
+        cInterval = susceptible_intervals[num_Susceptible];
+        susceptible_intervals[num_Susceptible] = interval + cInterval;
 
-        timeLastNumberSusceptible = time;
+        time_of_last_number_of_susceptible = time;
     }
         
     num_Contracted = num_Cont;
@@ -71,7 +71,7 @@ std::string Simulator::eventToString(EventType evt) {
     }
 }
 
-void Simulator::fillVertices(Params params) {
+void Simulator::fill_vertices(Params params) {
     // create directory to vertices 
     std::string verticesOutputDir = this->outputDir + "/Vertices";
     Utils::createDirectory(verticesOutputDir);
@@ -160,14 +160,9 @@ Simulator::Simulator(Params params, std::string jsonStr, ManipulaGrafoV _graph) 
     num_Inf_Events = 0;
     num_Infected = 0;
     num_Contracted = 0;
-    timeLastNumberInfect = 0;
-    timeLastNumberContracted = 0;
-    timeLastNumberSusceptible = 0;
-
-    // create new directory for each execution
-    time_t now = std::time(0);
-    tm *ltm = localtime(&now);
-    std::string fName = std::to_string(ltm->tm_mday) + "-" + std::to_string(1 + ltm->tm_mon) + "-" + std::to_string(1900 + ltm->tm_year) + " " + std::to_string(ltm->tm_hour) + ":" + std::to_string(ltm->tm_min) + ":" + std::to_string(1 + ltm->tm_sec);
+    time_of_last_number_of_infected = 0;
+    time_of_last_number_of_contracted = 0;
+    time_of_last_number_of_susceptible = 0;
 
     outputDir = params.OutputDir;// + "/" + fName;
     boost::filesystem::path dir(outputDir.c_str());
@@ -187,7 +182,7 @@ Simulator::Simulator(Params params, std::string jsonStr, ManipulaGrafoV _graph) 
     arq.close();
 
     // writting params to file
-    std::string paramsFile = outputDir + "/Params_Execution.txt";
+    std::string paramsFile = outputDir + "/Params_Execution.json";
     arq.open(paramsFile);
     arq << jsonStr << "\n";
     arq.close();
@@ -202,9 +197,9 @@ Simulator::Simulator(int _k, int _timeLimt, int _rounds, std::string rede) {
     rounds = _rounds;
     graph.lerArquivo(rede, false);
     time = 0;
-    timeLastNumberInfect = 0;
-    timeLastNumberContracted = 0;
-    timeLastNumberSusceptible = 0;
+    time_of_last_number_of_infected = 0;
+    time_of_last_number_of_contracted = 0;
+    time_of_last_number_of_susceptible = 0;
     num_Inf_Events = 0;
     num_Infected = 0;
 
@@ -223,7 +218,7 @@ Simulator::~Simulator() {
         delete *it;
 }
 
-Event Simulator::getEventTop() {
+Event Simulator::get_top_event() {
     Event evt = events.top();
     events.pop();
     return evt;
@@ -231,7 +226,7 @@ Event Simulator::getEventTop() {
 
 void Simulator::initialize(Params params) {
     // fill vertices
-    fillVertices(params);
+    fill_vertices(params);
     // fill rws and events
     setupRandomWalks(params.Rw);
     //fill Events
@@ -252,6 +247,9 @@ void Simulator::infect(Vertex * vertex, Event evt) {
                 Event evt_new(t_tau, (*it)->getCode(), EventType::Infect);
                 events.push(evt_new);
 
+                // write snapshot of states
+                writeNumberRwStatePerTime();
+    
                 (*it)->setState(State::Contracted);
                 (*it)->setTimeStateChange(time, State::Contracted);
                 num_Inf_Events++;
@@ -279,6 +277,9 @@ void Simulator::beInfected(Vertex * v, Event evt) {
         Event evt_new(t_tau, evt.randomwalk, EventType::Infect);
         events.push(evt_new);
 
+        // write snapshot of states
+        writeNumberRwStatePerTime();
+    
         rw->setState(State::Contracted);
         rw->setTimeStateChange(time, State::Contracted);
         num_Inf_Events++;
@@ -294,7 +295,7 @@ void Simulator::beInfected(Vertex * v, Event evt) {
     }
 }
 
-void Simulator::processWalk(Event evt) {
+void Simulator::process_walk(Event evt) {
     RandomWalk * rw = randomWalks.at(evt.randomwalk);
 
     double timeToWalk = rg.exponential(rw->getLambda());
@@ -336,7 +337,10 @@ void Simulator::processWalk(Event evt) {
         beInfected(dstVertex, evt);
 }
 
-void Simulator::processInfect(Event evt) {
+void Simulator::process_infect(Event evt) {
+    // write snapshot of states
+    writeNumberRwStatePerTime();
+    
     RandomWalk * rw = randomWalks.at(evt.randomwalk);
     rw->setState(State::Infected);
     rw->setTimeStateChange(time, State::Infected);
@@ -363,7 +367,10 @@ void Simulator::processInfect(Event evt) {
     infect(vertex, evt);
 }
 
-void Simulator::processHeal(Event evt) {
+void Simulator::process_heal(Event evt) {
+    // write snapshot of states
+    writeNumberRwStatePerTime();
+    
     RandomWalk * rw = randomWalks.at(evt.randomwalk);
     rw->setState(State::Susceptible);
     rw->setTimeStateChange(time, State::Susceptible);
@@ -388,23 +395,23 @@ void Simulator::writeNumberRwStatePerTime() {
     arq.close();
 }
 
-void Simulator::writeInfectInterval(){
+void Simulator::write_infected_intervals(){
     std::ofstream arq;
     arq.open(fileNameInfectInterval, std::ofstream::out | std::ofstream::app);
 
     for(int i = 0; i < k; i++)
-        arq << i << "," << infectedInterval[i]/time << std::endl;
+        arq << i << "," << infected_intervals[i]/time << std::endl;
 
     arq.close();
 }
 
-void Simulator::writeContractedInterval()
+void Simulator::write_contracted_intervals()
 {
     std::ofstream arq;
     arq.open(fileNameContractedInterval, std::ofstream::out | std::ofstream::app);
 
     for(int i = 0; i < k; i++)
-        arq << i << "," << contractedInterval[i]/time << std::endl;
+        arq << i << "," << contracted_intervals[i]/time << std::endl;
 
     arq.close();
 }
@@ -415,7 +422,7 @@ void Simulator::writeSusceptibleInterval()
     arq.open(fileNameSusceptibleInterval, std::ofstream::out | std::ofstream::app);
 
     for(int i = 0; i < k; i++)
-        arq << i << "," << susceptibleInterval[i]/time << std::endl;
+        arq << i << "," << susceptible_intervals[i]/time << std::endl;
 
     arq.close();
 }
@@ -427,28 +434,28 @@ void Simulator::process() {
 
         if (time > timeLimit || (num_Inf_Events == 0 && num_Infected == 0))
             break;
-
-        Event evt = getEventTop();
+        
+        Event evt = get_top_event();
         time = evt.time;
 
         switch (evt.type) {
             case Walk:
-                processWalk(evt);
+                process_walk(evt);
                 break;
             case Infect:
-                processInfect(evt);
+                process_infect(evt);
                 break;
             case Recover:
-                processHeal(evt);
+                process_heal(evt);
                 break;
 
             default:
                 break;
         }
 
-        if (evt.type != EventType::Walk)
-            writeNumberRwStatePerTime();
-
+        //if (evt.type != EventType::Walk)
+            //writeNumberRwStatePerTime();
+        
         double percentual = time / timeLimit * 100;
 
         if ((int) percentual != (int) old_percentual)
@@ -463,8 +470,8 @@ void Simulator::process() {
         randomWalks.at(i)->WriteResults();
     }
     
-    writeInfectInterval();
-    writeContractedInterval();
+    write_infected_intervals();
+    write_contracted_intervals();
     writeSusceptibleInterval();
     
     for (int i = 0; i < vertices.size(); i++) {

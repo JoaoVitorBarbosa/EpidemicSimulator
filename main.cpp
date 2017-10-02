@@ -130,7 +130,7 @@ void testBipartiteGraph() {
 int main(int argc, char** argv) {
 
     if (argc < 2) {
-        std::cerr << "Missing Parameter file argument." << std::endl;
+        std::cerr << "Missing filepath parameter." << std::endl;
         //return 0;
     }
 
@@ -157,7 +157,7 @@ int main(int argc, char** argv) {
             params.Vertex.vertexParamVector[vertices[i][0]] = vertices[i][1];
 
         EpidemicManager manager;
-        manager.startSimulation(params, j.dump(4));
+        manager.start_simulation(params, j.dump(4));
 
     } catch (exception& e) {
         std::cerr << "Error while parsing parameter file: . " << argv[1] << " Erro: " << e.what() << std::endl;
