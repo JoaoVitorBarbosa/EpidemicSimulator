@@ -50,8 +50,8 @@ OBJECTFILES= \
 CFLAGS=
 
 # CC Compiler Flags
-CCFLAGS=
-CXXFLAGS=
+CCFLAGS=-pthread
+CXXFLAGS=-pthread
 
 # Fortran Compiler Flags
 FFLAGS=
@@ -60,7 +60,7 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=
+LDLIBSOPTIONS=-L/usr/lib/x86_64-linux-gnu -lboost_filesystem -lboost_iostreams -lboost_system
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
@@ -73,47 +73,47 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/epidemic_simulator: ${OBJECTFILES}
 ${OBJECTDIR}/EpidemicAnalysis.o: EpidemicAnalysis.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/EpidemicAnalysis.o EpidemicAnalysis.cpp
+	$(COMPILE.cc) -O2 -I/usr/include -I../../../../Desenvolvimento/gnuplot-iostream -I../ThirdParties/JSON -std=c++14 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/EpidemicAnalysis.o EpidemicAnalysis.cpp
 
 ${OBJECTDIR}/EpidemicManager.o: EpidemicManager.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/EpidemicManager.o EpidemicManager.cpp
+	$(COMPILE.cc) -O2 -I/usr/include -I../../../../Desenvolvimento/gnuplot-iostream -I../ThirdParties/JSON -std=c++14 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/EpidemicManager.o EpidemicManager.cpp
 
 ${OBJECTDIR}/ManipulaGrafo.o: ManipulaGrafo.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/ManipulaGrafo.o ManipulaGrafo.cpp
+	$(COMPILE.cc) -O2 -I/usr/include -I../../../../Desenvolvimento/gnuplot-iostream -I../ThirdParties/JSON -std=c++14 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/ManipulaGrafo.o ManipulaGrafo.cpp
 
 ${OBJECTDIR}/RandomGenerator.o: RandomGenerator.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/RandomGenerator.o RandomGenerator.cpp
+	$(COMPILE.cc) -O2 -I/usr/include -I../../../../Desenvolvimento/gnuplot-iostream -I../ThirdParties/JSON -std=c++14 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/RandomGenerator.o RandomGenerator.cpp
 
 ${OBJECTDIR}/RandomWalk.o: RandomWalk.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/RandomWalk.o RandomWalk.cpp
+	$(COMPILE.cc) -O2 -I/usr/include -I../../../../Desenvolvimento/gnuplot-iostream -I../ThirdParties/JSON -std=c++14 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/RandomWalk.o RandomWalk.cpp
 
 ${OBJECTDIR}/Simulator.o: Simulator.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Simulator.o Simulator.cpp
+	$(COMPILE.cc) -O2 -I/usr/include -I../../../../Desenvolvimento/gnuplot-iostream -I../ThirdParties/JSON -std=c++14 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Simulator.o Simulator.cpp
 
 ${OBJECTDIR}/Utils.o: Utils.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Utils.o Utils.cpp
+	$(COMPILE.cc) -O2 -I/usr/include -I../../../../Desenvolvimento/gnuplot-iostream -I../ThirdParties/JSON -std=c++14 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Utils.o Utils.cpp
 
 ${OBJECTDIR}/Vertex.o: Vertex.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Vertex.o Vertex.cpp
+	$(COMPILE.cc) -O2 -I/usr/include -I../../../../Desenvolvimento/gnuplot-iostream -I../ThirdParties/JSON -std=c++14 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Vertex.o Vertex.cpp
 
 ${OBJECTDIR}/main.o: main.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main.o main.cpp
+	$(COMPILE.cc) -O2 -I/usr/include -I../../../../Desenvolvimento/gnuplot-iostream -I../ThirdParties/JSON -std=c++14 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main.o main.cpp
 
 # Subprojects
 .build-subprojects:

@@ -27,13 +27,18 @@
 #include "Params.h"
 
 
+struct Stats{
+    double mean;
+    double median;
+};
+
 class EpidemicAnalysis{
 private:
     
     /// Generates statistics of states distributions for each random walk. It also generates the CCDF graphic.
     /// \param timeStampStatesChange Pairs of time interval and State
     /// \param rw Random walk Id
-    void createStateStatisticsAndCCDF(std::vector<std::pair<double, int> > timeStampStatesChange, std::string rw);
+    void createStateStatisticsAndCCDF(std::vector<std::pair<double, int> > timeStampStatesChange, std::string rw, double gama, double tau);
     
     /// Given a ordered list of elements, calculates the ccdf of the numbers
     /// \param elements
@@ -50,9 +55,15 @@ private:
     /// \return Return vector of pairs of (state, interval)
     std::vector<std::pair<int,double>> getStateInterval(std::string filepath);
     
+    /// Return median of multiset elements. Just gets the half of multiset cause it's already ordered
+    /// \param elems
+    /// \return median
+    Stats get_median(std::multiset<double> elems);
+    
 public:
     EpidemicAnalysis(std::string _outputDir);
     Params params;
+    bool do_validation;
     
     // Directory to save generated data
     std::string outputDir;
@@ -64,7 +75,7 @@ public:
     
     /// Creates graphic with ccdf distribution of states: susceptible, contracted, infected
     /// \param filepath Stores state change and time
-    void getRandomWalkCCDFAndStatistics(std::string filepath, std::string title);
+    void getRandomWalkCCDFAndStatistics(std::string filepath, std::string title, double gama, double tau);
 
     /// Generate statistics and CCDF of all states for all random walks
     /// \param dir Directory to find random walk files
@@ -85,7 +96,8 @@ public:
     /// Generate CCDF graphic for walk time of one random walk
     /// \param filepath
     /// \param randomWalk Id of random walk
-    void RandomWalkWalkingCCDF(std::string filepath, std::string randomWalk);
+    /// \lambda parameter of exponential for validation
+    void RandomWalkWalkingCCDF(std::string filepath, std::string randomWalk, double _lambda);
     
     
 };

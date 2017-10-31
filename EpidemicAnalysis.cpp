@@ -10,6 +10,7 @@
 
 EpidemicAnalysis::EpidemicAnalysis(std::string _outputDir) {
     outputDir = _outputDir;
+    do_validation = false;
 }
 
 /*
@@ -31,14 +32,14 @@ std::vector<std::pair<double, double> > EpidemicAnalysis::getCCDFPoints(std::mul
     return xy_pts;
 }
 
-void EpidemicAnalysis::createStateStatisticsAndCCDF(std::vector<std::pair<double, int> > timeStampStatesChange, std::string rw) {
+void EpidemicAnalysis::createStateStatisticsAndCCDF(std::vector<std::pair<double, int> > timeStampStatesChange, std::string rw, double gama, double tau) {
     std::multiset<double> suscetibles_segments;
     std::multiset<double> contracteds_segments;
     std::multiset<double> infecteds_segments;
 
-    boost::accumulators::accumulator_set<double, boost::accumulators::features < boost::accumulators::tag::mean, boost::accumulators::tag::median, boost::accumulators::tag::variance>> intervalsInfected;
-    boost::accumulators::accumulator_set<double, boost::accumulators::features < boost::accumulators::tag::mean, boost::accumulators::tag::median, boost::accumulators::tag::variance>> intervalsContracted;
-    boost::accumulators::accumulator_set<double, boost::accumulators::features < boost::accumulators::tag::mean, boost::accumulators::tag::median, boost::accumulators::tag::variance>> intervalsSusceptible;
+    boost::accumulators::accumulator_set<double, boost::accumulators::features < boost::accumulators::tag::mean, boost::accumulators::tag::variance>> intervalsInfected;
+    boost::accumulators::accumulator_set<double, boost::accumulators::features < boost::accumulators::tag::mean, boost::accumulators::tag::variance>> intervalsContracted;
+    boost::accumulators::accumulator_set<double, boost::accumulators::features < boost::accumulators::tag::mean, boost::accumulators::tag::variance>> intervalsSusceptible;
 
     // states: 0 -> Susceptible, 1 -> Contracted, 2 -> infected
     // begins from 1 because first element is always (zero, initial state)
@@ -74,43 +75,64 @@ void EpidemicAnalysis::createStateStatisticsAndCCDF(std::vector<std::pair<double
     std::vector<std::pair<double, double> > contractedsPts = getCCDFPoints(contracteds_segments);
     std::vector<std::pair<double, double> > infectedsPts = getCCDFPoints(infecteds_segments);
 
-    std::string filename = this->outputDir + "/CCDFStateRW" + rw + ".png";
+    std::string prefix("RW" + rw);
+    std::string filename = this->outputDir + "/" + prefix + "_CCDFState.png";
 
     // print all ccdf in one graphic
     Gnuplot gp;
 
-    gp << "set title 'CCDF tempo gasto no estado \n";
-    gp << "set xlabel 'Tempo gasto no estado' \n";
-    gp << "set ylabel 'Fração' \n";
-    gp << "set term png \n";
-    gp << "set output '" + filename + "' \n";
-    gp << "set logscale y \n";
-    gp << "plot '-' title 'Susceptible' with lines lt rgb '#00FF00', "
-            "'-' title 'Contracted' with lines lt rgb '#0000FF', "
-            "'-' title 'Infected' with lines lt rgb '#FF0000' \n";
+    if (do_validation) {
+        gp << "set title 'CCDF tempo gasto no estado infectado' \n";
+        gp << "set xlabel 'Tempo' \n";
+        gp << "set ylabel 'Fração' \n";
+        gp << "set term png \n";
+        gp << "set output '" + this->outputDir + "/" + prefix + "_CCDFInfected" + "' \n";
+        gp << "set logscale y \n";
+        gp << "plot" << gp.file1d(infectedsPts) << "title 'Infectado' with lines lt rgb '#00FF00', exp(-" + std::to_string(gama) + "*x) title 'Statistics' with lines lt rgb '#FF0000' \n";
 
-    gp.send1d(susceptiblesPts);
-    gp.send1d(contractedsPts);
-    gp.send1d(infectedsPts);
+        gp << "set title 'CCDF tempo gasto no estado contraido' \n";
+        gp << "set xlabel 'Tempo' \n";
+        gp << "set ylabel 'Fração' \n";
+        gp << "set term png \n";
+        gp << "set output '" + this->outputDir + "/" + prefix + "_CCDFContracted" + "' \n";
+        gp << "set logscale y \n";
+        gp << "plot" << gp.file1d(contractedsPts) << "title 'Contraido' with lines lt rgb '#00FF00', exp(-" + std::to_string(tau) + "*x) title 'Statistics' with lines lt rgb '#FF0000' \n";
+    } else {
+        gp << "set title 'CCDF tempo gasto no estado \n";
+        gp << "set xlabel 'Tempo gasto no estado' \n";
+        gp << "set ylabel 'Fração' \n";
+        gp << "set term png \n";
+        gp << "set output '" + filename + "' \n";
+        gp << "set logscale y \n";
+        gp << "plot" << gp.file1d(susceptiblesPts) << "title 'Susceptible' with lines lt rgb '#00FF00', "
+                << gp.file1d(contractedsPts) << "title 'Contracted' with lines lt rgb '#0000FF', "
+                << gp.file1d(infectedsPts) << "title 'Infected' with lines lt rgb '#FF0000' \n";
+    }
 
     std::ofstream arq;
-    arq.open(this->outputDir + "/RW_" + rw + "_Results.txt");
+    arq.open(this->outputDir + "/" + prefix + "_Results.txt", std::ofstream::out | std::ofstream::app);
 
-    double mediaEsperada = 1 / params.Rw.gama;
-    double dpEsperado = mediaEsperada;
-    double mediana = std::log(2) / params.Rw.gama;
+    double infected_mean = boost::accumulators::mean(intervalsInfected);
 
-    arq << "# Dados Infectado - Média: " << boost::accumulators::mean(intervalsInfected)
-            << " Desvio Padrão: " << std::sqrt(boost::accumulators::variance(intervalsInfected))
-            << " Mediana: " << std::sqrt(boost::accumulators::median(intervalsInfected)) << '\n';
+    arq << "Estado Infectado \n"
+            << "    Média teórica:          " << 1 / gama << "    Média estatística: " << infected_mean << "\n"
+            << "    Desvio Padrão teórico:  " << 1 / gama << "    Desvio padrão estatístico: " << std::sqrt(boost::accumulators::variance(intervalsInfected)) << "\n"
+            << "    Mediana teórica:        " << std::log(2) / gama << "    Mediana estatística: " << get_median(infecteds_segments).median << "\n"
+            << "    Gama teórico:           " << gama << "    Gama estatístico: " << 1 / infected_mean << "\n"
+            << '\n';
 
-    arq << "# Dados Contraído - Média: " << boost::accumulators::mean(intervalsContracted)
-            << " Desvio Padrão: " << std::sqrt(boost::accumulators::variance(intervalsContracted))
-            << " Mediana: " << std::sqrt(boost::accumulators::median(intervalsContracted)) << '\n';
+    arq << "Estado Contraído \n"
+            << "    Média teórica:          " << 1 / tau << "    Média estatística: " << boost::accumulators::mean(intervalsContracted) << "\n"
+            << "    Desvio Padrão teórico:  " << 1 / tau << "    Desvio padrão estatístico: " << std::sqrt(boost::accumulators::variance(intervalsContracted)) << "\n"
+            << "    Mediana teórica:        " << std::log(2) / tau << "    Mediana estatística: " << get_median(contracteds_segments).median << "\n"
+            << "    Tau teórico:           " << tau << "    Tau estatístico: " << 1 / boost::accumulators::mean(intervalsContracted) << "\n"
+            << '\n';
 
-    arq << "# Dados Suscetivel - Média: " << boost::accumulators::mean(intervalsSusceptible)
-            << " Desvio Padrão: " << std::sqrt(boost::accumulators::variance(intervalsSusceptible))
-            << " Mediana: " << std::sqrt(boost::accumulators::median(intervalsSusceptible)) << '\n';
+    arq << "Estado Suscetível \n"
+            << "    Média: " << boost::accumulators::mean(intervalsSusceptible) << "\n"
+            << "    Desvio Padrão: " << std::sqrt(boost::accumulators::variance(intervalsSusceptible)) << "\n"
+            << "    Mediana: " << get_median(suscetibles_segments).median << "\n"
+            << '\n';
 
     arq.close();
 }
@@ -189,11 +211,11 @@ void EpidemicAnalysis::readTimestampStateChangeCSV(std::string filename, std::ve
 void EpidemicAnalysis::getSystemCCDFAndStatistics(std::string dir, int num_rw) {
     std::vector<std::pair<double, int> > all;
     for (int i = 0; i < num_rw; i++) {
-        readTimestampStateChangeCSV(dir + "/RW_" + std::to_string(i) + "_Results.txt", all);
+        readTimestampStateChangeCSV(dir + "/RW" + std::to_string(i) + "_Results.txt", all);
         all.push_back(std::make_pair(0, 0));
     }
 
-    createStateStatisticsAndCCDF(all, "System");
+    //createStateStatisticsAndCCDF(all, "System");
 }
 
 void EpidemicAnalysis::readWalkingTime(std::string filename, std::multiset<double> &timeStampWalking) {
@@ -222,13 +244,16 @@ void EpidemicAnalysis::readWalkingTime(std::string filename, std::multiset<doubl
     arq.close();
 }
 
-void EpidemicAnalysis::RandomWalkWalkingCCDF(std::string filepath, std::string randomWalk) {
+void EpidemicAnalysis::RandomWalkWalkingCCDF(std::string filepath, std::string randomWalk, double lambda) {
+    boost::accumulators::accumulator_set<double, boost::accumulators::features < boost::accumulators::tag::mean, boost::accumulators::tag::variance>> intervalsWalking;
     std::multiset<double> walking_segments;
     readWalkingTime(filepath, walking_segments);
 
+    intervalsWalking = std::for_each(walking_segments.begin(), walking_segments.end(), intervalsWalking);
+
     std::vector<std::pair<double, double> > walkingPts = getCCDFPoints(walking_segments);
 
-    std::string filename = this->outputDir + "/CCDF_walking" + randomWalk + ".png";
+    std::string filename = this->outputDir + "/" + "RW" + randomWalk + "_CCDF_walk.png";
 
     Gnuplot gp;
 
@@ -238,9 +263,28 @@ void EpidemicAnalysis::RandomWalkWalkingCCDF(std::string filepath, std::string r
     gp << "set term png \n";
     gp << "set output '" + filename + "' \n";
     gp << "set logscale y \n";
-    gp << "plot '-' title 'CCDF do tempo de caminhada' with lines lt rgb '#00FF00' \n";
+    if (do_validation) {
+        gp << "plot" << gp.file1d(walkingPts) << "title 'empiric' with lines lt rgb '#00FF00', exp(-" + std::to_string(lambda) + "*x) title 'statistics' with lines lt rgb '#FF0000' \n";
 
-    gp.send1d(walkingPts);
+        // writing in file
+        std::string prefix("RW" + randomWalk);
+        std::string filename = this->outputDir + "/" + prefix + "_CCDFState.png";
+
+        std::ofstream arq;
+        arq.open(this->outputDir + "/" + prefix + "_Results.txt", std::ofstream::out | std::ofstream::app);
+
+        double emp_mean = boost::accumulators::mean(intervalsWalking);
+        Stats stats = get_median(walking_segments);
+
+        arq << "Dados do evento caminhar \n"
+                << "    Média teórica:          " << 1 / lambda << "    Média estatística: " << emp_mean << "   Outra média: " << stats.mean << "\n"
+                << "    Desvio Padrão teórico:  " << 1 / lambda << "    Desvio padrão estatístico: " << std::sqrt(boost::accumulators::variance(intervalsWalking)) << "\n"
+                << "    Mediana teórica:        " << std::log(2) / lambda << "    Mediana estatística: " << stats.median << "\n"
+                << "    Lambda teórico:           " << lambda << "    Gama estatístico: " << 1 / emp_mean << "\n"
+                << '\n';
+    } else
+        gp << "plot" << gp.file1d(walkingPts) << "title 'empiric' with lines lt rgb '#00FF00 \n'";
+
 }
 
 void EpidemicAnalysis::randomWalkStateTimeSeries(std::string arquivo) {
@@ -295,7 +339,7 @@ void EpidemicAnalysis::randomWalkStateTimeSeries(std::string arquivo) {
     arq.close();
 
     max = max + 1;
-    
+
     std::string filename = this->outputDir + "/rwStateTimeSeries.png";
 
     Gnuplot gp;
@@ -345,10 +389,10 @@ void readTimeNumberInfect(std::string filename, std::set<double, int>) {
     arq.close();
 }
 
-void EpidemicAnalysis::getRandomWalkCCDFAndStatistics(std::string filepath, std::string title) {
+void EpidemicAnalysis::getRandomWalkCCDFAndStatistics(std::string filepath, std::string title, double gama, double tau) {
     std::vector<std::pair<double, int> > pairs;
     readTimestampStateChangeCSV(filepath, pairs);
-    createStateStatisticsAndCCDF(pairs, title);
+    createStateStatisticsAndCCDF(pairs, title, gama, tau);
 }
 
 void EpidemicAnalysis::stateDistribution(std::string filepathInfected, std::string filepathContracted, std::string filepathSusceptible, std::string title) {
@@ -373,4 +417,24 @@ void EpidemicAnalysis::stateDistribution(std::string filepathInfected, std::stri
     gp.send1d(timeStampContractedChange);
     gp.send1d(timeStampInfectedChange);
 
+}
+
+Stats EpidemicAnalysis::get_median(std::multiset<double> elems) {
+    Stats stats;
+    double median = 0.0;
+    double mean = 0.0;
+    int i = 0;
+    int count = elems.size();
+    for (auto it = elems.begin(); it != elems.end(); it++) {
+        if (i == count / 2)
+            median = *it;
+        mean += *it;
+        i++;
+    }
+    mean = mean / count;
+
+    stats.mean = mean;
+    stats.median = median;
+    
+    return stats;
 }

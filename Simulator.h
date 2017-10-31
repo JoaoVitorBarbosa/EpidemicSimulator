@@ -37,7 +37,7 @@ class Simulator {
     int num_Infected;
     int num_Contracted;
     int num_Inf_Events;
-    int timeLimit;
+    int limit_time_epidemic;
     int rounds;
     double time_of_last_number_of_infected;
     /// Stores Time interval that system had k infected
@@ -51,13 +51,13 @@ class Simulator {
 
     void write_infected_intervals();
     void write_contracted_intervals();
-    void writeSusceptibleInterval();
+    void write_susceptible_intervals();
     
     /// Changes number of infected e compute time interval. Increase or decrease by 1.
     /// \param num_Infec New number of infected
-    void changeNumberInfected(int num_Infec);
+    void change_infected_number(int num_Infec);
     
-    /// Changes number of contracted e compute time interval. Increase or decrease by 1.
+    /// Changes number of contracted e compute time interval simulator spends with this number. Increase or decrease by 1.
     /// \param num_Contracted New number of contracted
     void changeNumberContracted(int num_Contracted);
     

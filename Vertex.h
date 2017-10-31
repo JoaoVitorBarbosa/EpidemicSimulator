@@ -31,6 +31,10 @@ class Vertex {
     std::string dirToSave;
     double totalTimeWithInfc;
     
+    // validation
+    int total_encounters;
+    int total_encounters_with_transmission;
+    
 public:
     std::string fileNameTimeResult;
     
@@ -62,6 +66,9 @@ public:
     /// Remove Random Walk from RW list using its iterator
     /// \param it RW Iterator
     void eraseRandomWalk(std::list<RandomWalk*>::iterator it);
+    
+    void increase_encounters_by(int n);
+    void increase_encounters_with_transmition_by(int n);
 };
 
 #endif /* VERTEX_H */

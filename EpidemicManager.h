@@ -39,6 +39,7 @@ public:
     Params params;
     
     EpidemicManager();
+    EpidemicManager(bool do_analysis);
     
     /// Starts Simulation
     /// \param params parameters for simulation
@@ -61,6 +62,8 @@ private:
     
     /// duration of all runs
     int aggregate_time_ms;
+    double epidemic_time;
+    int do_analysis;
     
     /// Boost accumulator used to store duration of epidemic
     boost::accumulators::accumulator_set<double, boost::accumulators::features<boost::accumulators::tag::mean, boost::accumulators::tag::variance>> timeAccumulator;

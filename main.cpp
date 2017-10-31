@@ -126,9 +126,24 @@ void testBipartiteGraph() {
             std::cout << i + 1 << "-" << graph.vetorAdj[i][j] << std::endl;
 }
 
+void ploting_expotential(){
+    Gnuplot gp;
+
+    gp << "set title 'CCDF tempo gasto no estado \n";
+    gp << "set xlabel 'Tempo gasto no estado' \n";
+    gp << "set ylabel 'Fração' \n";
+    gp << "set term png \n";
+    gp << "set output 'teste.png' \n";
+    //gp << "set label 'yield point' at 0.0, 0.958 \n";
+    //gp << "set yrange [:1] \n";
+    gp << "set logscale y \n";
+    gp << "plot [0:] exp(-2*x) \n"; // cdf exponential
+
+    //gp.send1d(susceptiblesPts);
+}
 
 int main(int argc, char** argv) {
-
+    
     if (argc < 2) {
         std::cerr << "Missing filepath parameter." << std::endl;
         //return 0;
@@ -156,7 +171,7 @@ int main(int argc, char** argv) {
         for (int i = 0; i < vertices.size(); i++)
             params.Vertex.vertexParamVector[vertices[i][0]] = vertices[i][1];
 
-        EpidemicManager manager;
+        EpidemicManager manager(false);
         manager.start_simulation(params, j.dump(4));
 
     } catch (exception& e) {

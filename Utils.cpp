@@ -31,7 +31,7 @@ std::string Utils::datetime_now_to_string() {
 void Utils::createDirectory(std::string directory) {
     boost::filesystem::path dir(directory.c_str());
     if (boost::filesystem::create_directory(dir)) {
-        std::cout << "Directory " << directory << " created successfully" << "\n";
+        //std::cout << "Directory " << directory << " created successfully" << "\n";
     }
 }
 

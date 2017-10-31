@@ -18,10 +18,10 @@ RandomWalk::RandomWalk(int _vertex, double _lambda, double _gama, double _tau, S
     code = _code;
     outputDir = _outputDir;
 
-    std::string _name = "RW_" + std::to_string(code) + "_" + std::to_string(std::chrono::system_clock::now().time_since_epoch().count());
-    fileName = outputDir + "/" + _name + ".txt";
-    fileNameParmResult = outputDir + "/RW_" + std::to_string(code) + "_Results.txt";
-    fileNameWalkingTimes = outputDir + "/RW_" + std::to_string(code) + "_walkingTimes.txt";
+    std::string prefix = "RW" + std::to_string(code);
+    fileName = outputDir + "/" + prefix + "_change  .txt";
+    fileNameParmResult = outputDir + "/" + prefix + "_Results.txt";
+    fileNameWalkingTimes = outputDir + "/" + prefix + "_walkingTimes.txt";
 
     std::ofstream arq;
 
@@ -122,17 +122,17 @@ void RandomWalk::writeEvent(History history) {
 }
 
 void RandomWalk::writeFile(History history) {
-    std::ofstream arq;
-    arq.open(fileName, std::ofstream::out | std::ofstream::app);
-    arq << std::fixed << history.time << "," << history.event << "," << history.vertex << "," << history.state << "," << history.effect << "," << history.getRWInfected() << '\n';
-    arq.close();
-    
-    if(history.event == "Walk")
-    {
-        arq.open(fileNameWalkingTimes, std::ofstream::out | std::ofstream::app);
-        arq << std::fixed << history.time << std::endl;
-        arq.close();
-    }
+//    std::ofstream arq;
+//    arq.open(fileName, std::ofstream::out | std::ofstream::app);
+//    arq << std::fixed << history.time << "," << history.event << "," << history.vertex << "," << history.state << "," << history.effect << "," << history.getRWInfected() << '\n';
+//    arq.close();
+//    
+//    if(history.event == "Walk")
+//    {
+//        arq.open(fileNameWalkingTimes, std::ofstream::out | std::ofstream::app);
+//        arq << std::fixed << history.time << std::endl;
+//        arq.close();
+//    }
 }
 
 void RandomWalk::insertTimeWalking(double _t) {
@@ -148,34 +148,34 @@ void RandomWalk::insertTimeContracted(double _t) {
 }
 
 void RandomWalk::WriteResults() {
-    std::ofstream arq;
-
-    arq.open(fileNameParmResult, std::ofstream::out | std::ofstream::app);
-
-    arq << std::fixed << "# Dados Infectado - Média: " << boost::accumulators::mean(intervalsInfected)
-            << " Mediana: " << boost::accumulators::median(intervalsInfected) 
-            << " Desvio Padrão: " << std::sqrt(boost::accumulators::variance(intervalsInfected)) << '\n';
-    
-    arq << std::fixed << "# Dados Contraído - Média: " << boost::accumulators::mean(intervalsContracted) 
-            << " Mediana: " << boost::accumulators::median(intervalsContracted) 
-            << " Desvio Padrão: " << std::sqrt(boost::accumulators::variance(intervalsContracted)) << '\n';
-    
-    arq << std::fixed << "# Dados Caminhar - Média: " << boost::accumulators::mean(intervalsWalking) 
-            << " Mediana: " << boost::accumulators::median(intervalsWalking) 
-            << " Desvio Padrão: " << std::sqrt(boost::accumulators::variance(intervalsWalking)) << '\n';
-
-    arq.close();
+//    std::ofstream arq;
+//
+//    arq.open(fileNameParmResult, std::ofstream::out | std::ofstream::app);
+//
+//    arq << std::fixed << "# Dados Infectado - Média: " << boost::accumulators::mean(intervalsInfected)
+//            << " Mediana: " << boost::accumulators::median(intervalsInfected) 
+//            << " Desvio Padrão: " << std::sqrt(boost::accumulators::variance(intervalsInfected)) << '\n';
+//    
+//    arq << std::fixed << "# Dados Contraído - Média: " << boost::accumulators::mean(intervalsContracted) 
+//            << " Mediana: " << boost::accumulators::median(intervalsContracted) 
+//            << " Desvio Padrão: " << std::sqrt(boost::accumulators::variance(intervalsContracted)) << '\n';
+//    
+//    arq << std::fixed << "# Dados Caminhar - Média: " << boost::accumulators::mean(intervalsWalking) 
+//            << " Mediana: " << boost::accumulators::median(intervalsWalking) 
+//            << " Desvio Padrão: " << std::sqrt(boost::accumulators::variance(intervalsWalking)) << '\n';
+//
+//    arq.close();
 }
 
 void RandomWalk::setTimeStateChange(double _t, int _s) {
-    timeStampStatesChange.push_back(std::make_pair(_t, _s));
-
-    std::ofstream arq;
-    arq.open(fileNameParmResult, std::ofstream::out | std::ofstream::app);
-
-    arq << std::fixed << _t << "," << _s << '\n';
-
-    arq.close();
+//    timeStampStatesChange.push_back(std::make_pair(_t, _s));
+//
+//    std::ofstream arq;
+//    arq.open(fileNameParmResult, std::ofstream::out | std::ofstream::app);
+//
+//    arq << std::fixed << _t << "," << _s << '\n';
+//
+//    arq.close();
 }
 
 void RandomWalk::drawStates() {

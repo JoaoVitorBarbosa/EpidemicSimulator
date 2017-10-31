@@ -14,6 +14,8 @@ Vertex::Vertex(int _rwInf, double _p, int _code, int _kMax, std::string _dirToSa
     fileNameTimeResult = dirToSave + "/" + std::to_string(code) + "_vertex_results.txt";
     totalTimeWithInfc = 0.0;
     timeLastNumberinfect = 0.0;
+    total_encounters = 0;
+    total_encounters_with_transmission = 0;
 }
 
 Vertex::~Vertex() {
@@ -65,16 +67,20 @@ void Vertex::increaseRwInfecteds(double time) {
 }
 
 void Vertex::writeTimeInfected(double time) {
-    std::ofstream arq;
+    /*std::ofstream arq;
     arq.open(fileNameTimeResult, std::ofstream::out | std::ofstream::app);
 
     //for(std::map<int, double>::iterator it = timeNumberInfect.begin(); it != timeNumberInfect.end(); it++) 
 //        arq << it->first  << "," << it->second / totalTimeWithInfc << std::endl;
     
+    arq << "Total encounters: " << total_encounters << std::endl;
+    arq << "Total encounters with transmission: " << total_encounters_with_transmission << std::endl;
+    arq << "Empiric p: " << total_encounters_with_transmission/(double) total_encounters << std::endl;
+            
     for (int i = 0; i <= kMax; i++)
         arq << i  << "," << timeNumberInfect[i] / totalTimeWithInfc << std::endl;
 
-    arq.close();
+    arq.close();*/
 }
 
 std::list<RandomWalk*>::iterator Vertex::setRandomWalk(RandomWalk* rw) {
@@ -91,4 +97,14 @@ void Vertex::eraseRandomWalk(std::list<RandomWalk*>::iterator it) {
     if (!randomWalks.empty()) {
         randomWalks.erase(it);
     }
+}
+
+void Vertex::increase_encounters_by(int n)
+{
+    this->total_encounters += n;
+}
+
+void Vertex::increase_encounters_with_transmition_by(int n)
+{
+    this->total_encounters_with_transmission += n;
 }
