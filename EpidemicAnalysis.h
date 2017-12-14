@@ -99,7 +99,14 @@ public:
     /// \lambda parameter of exponential for validation
     void RandomWalkWalkingCCDF(std::string filepath, std::string randomWalk, double _lambda);
     
+    void mean_time_of_epidemic_over_k(std::vector<std::pair<double, double> > k_mean_time, int n);
+    void std_time_of_epidemic_over_k(std::vector<std::pair<double, double> > k_std_time, int n);
     
+    void mean_time_of_epidemic_over_n(std::vector<std::pair<double, double> > k_mean_time, int k);
+    void std_time_of_epidemic_over_n(std::vector<std::pair<double, double> > k_std_time, int k);
+    
+    void mean_time_of_epidemic_over_lambda(std::vector<std::pair<double, double> > k_mean_time, int k);
+    void std_time_of_epidemic_over_lambda(std::vector<std::pair<double, double> > k_std_time, int k);
 };
 
 

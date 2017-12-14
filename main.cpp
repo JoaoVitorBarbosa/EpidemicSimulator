@@ -36,21 +36,27 @@ void to_json(json& j, const Params& p) {
         {"Runs", p.Runs},
         {"Time", p.Time},
         {"OutputDir", p.OutputDir},
+        {"Operation", p.Operation},
         {"p", p.p},
+        {"KS", p.KS},
         {"GraphParam",
             {
                 {"Type", p.Graph.Type},
                 {"n", p.Graph.n},
-                {"path", p.Graph.path}
+                {"n2", p.Graph.n2},
+                {"path", p.Graph.path},
+                {"NS", p.Graph.NS}
             }},
         {"RwParam",
             {
                 {"k", p.Rw.k},
                 {"ki", p.Rw.ki},
+                {"kiPer", p.Rw.kiPer},
                 {"lambda", p.Rw.lambda},
                 {"gama", p.Rw.gama},
                 {"tau", p.Rw.tau},
-                {"rwParamArray", p.Rw.rwParamArray}
+                {"rwParamArray", p.Rw.rwParamArray},
+                {"lambdaS", p.Rw.lambdaS}
             }},
         {"VertexParam",
             {
@@ -67,15 +73,21 @@ void from_json(const json& j, Params& p) {
     p.OutputDir = j.at("OutputDir").get<std::string>();
     p.Graph.Type = j.at("GraphParam").at("Type").get<int>();
     p.Graph.n = j.at("GraphParam").at("n").get<int>();
+    p.Graph.n2 = j.at("GraphParam").at("n2").get<int>();
     p.Graph.path = j.at("GraphParam").at("path").get<std::string>();
+    p.Graph.NS = j.at("GraphParam").at("NS").get<std::string>();
     p.Rw.k = j.at("RwParam").at("k").get<int>();
     p.Rw.ki = j.at("RwParam").at("ki").get<int>();
+    p.Rw.kiPer = j.at("RwParam").at("kiPer").get<double>();
     p.Rw.lambda = j.at("RwParam").at("lambda").get<double>();
     p.Rw.gama = j.at("RwParam").at("gama").get<double>();
     p.Rw.tau = j.at("RwParam").at("tau").get<double>();
+    p.Rw.lambdaS = j.at("RwParam").at("lambdaS").get<std::string>();
     p.Rw.rwParamArray = j.at("RwParam").at("rwParamArray").get<std::string>();
     p.Vertex.p = j.at("VertexParam").at("p").get<double>();
     p.Vertex.vertexParamArray = j.at("VertexParam").at("vertexParamArray").get<std::string>();
+    p.KS = j.at("KS").get<std::string>();
+    p.Operation = j.at("Operation").get<std::string>();
 }
 
 void validation() {
@@ -142,6 +154,20 @@ void ploting_expotential(){
     //gp.send1d(susceptiblesPts);
 }
 
+
+void validate_torus(){
+    int n = 4;
+    ManipulaGrafoV graph;
+    graph = GraphGenerator::Torus(n);
+    for(int i = 1; i <= graph.num_vertices; i++)
+    {
+        std::cout << i << " | ";
+        for(int j = 0; j < graph.get_vizinhos(i).size(); j++)
+            std::cout << graph.get_vizinhos(i)[j] << " ";
+        std::cout << std::endl;
+    }
+}
+
 int main(int argc, char** argv) {
     
     if (argc < 2) {
@@ -150,7 +176,7 @@ int main(int argc, char** argv) {
     }
 
     try {
-        argv[1] = "/home/joao/Mestrado/Simulador/Source\ Code/Epidemic_Simulator/data/Params.json";
+        //argv[1] = "/home/joao/Mestrado/Simulador/Source\ Code/Epidemic_Simulator/data/Params.json";
 
         string paramsPath = argv[1];
         std::cout << "Parsing file " << paramsPath << std::endl;
@@ -170,9 +196,57 @@ int main(int argc, char** argv) {
         std::vector<std::vector<double>> vertices = arVertex;
         for (int i = 0; i < vertices.size(); i++)
             params.Vertex.vertexParamVector[vertices[i][0]] = vertices[i][1];
+        
+        json arKS = json::parse(params.KS);
+        std::vector<int> KS = arKS;
+        params.KS_vector = KS;
+        
+        json arNS = json::parse(params.Graph.NS);
+        std::vector<int> NS = arNS;
+        params.Graph.NS_vector = NS;
+        
+        json arlambdaS = json::parse(params.Rw.lambdaS);
+        std::vector<double> lambdaS = arlambdaS;
+        params.Rw.lambda_vector = lambdaS;
 
+        // use parameters of command line if passed
+        if(argc > 2)
+            params.Time = atof(argv[2]);
+        if(argc > 3)
+        {
+            params.Graph.n = atoi(argv[3]);
+            params.Graph.n2 = atoi(argv[3]);
+        }
+        if(argc > 4)
+            params.Rw.k = atoi(argv[4]);
+        if(argc > 5)
+        {
+            params.Rw.kiPer = atof(argv[5]);
+        }
+        if(argc > 6)
+            params.Runs = atoi(argv[6]);
+                           
+        std::string op = "sim";
+        if(argc > 7)
+            op = argv[7];
+        
+        if(argc > 8)
+            params.OutputDir = argv[8];
+        
+        params.Rw.ki = params.Rw.k * params.Rw.kiPer;
+        
+        j = params;
+        
         EpidemicManager manager(false);
-        manager.start_simulation(params, j.dump(4));
+        
+        if(op == "sim")
+            manager.start_simulation(params, j.dump(4));
+        else if(op == "sim_by_k")
+            manager.mean_time_epidemic_by_k(params, j.dump(4));
+        else if(op == "sim_by_n")
+            manager.mean_time_epidemic_by_n(params, j.dump(4));
+        else if(op == "sim_by_lambda")
+            manager.mean_time_epidemic_by_lambda(params, j.dump(4));
 
     } catch (exception& e) {
         std::cerr << "Error while parsing parameter file: . " << argv[1] << " Erro: " << e.what() << std::endl;

@@ -16,7 +16,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <boost/filesystem.hpp>
-
+#include <string>
 
 // create debug level
 // create trace
@@ -35,6 +35,8 @@ public:
     static void createDirectory(std::string directory);
     
     static std::string datetime_now_to_string();
+    
+    static std::string replace_dot_to_comma(double d);
     
 private:
 

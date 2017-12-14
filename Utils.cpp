@@ -36,7 +36,15 @@ void Utils::createDirectory(std::string directory) {
 }
 
 std::string Utils::pad(int num)
-{
+{ 
     std::string aux = num < 10 ? "0" + std::to_string(num) : std::to_string(num);
     return aux;
+}
+
+std::string Utils::replace_dot_to_comma(double d)
+{
+    std::string str = std::to_string(d);
+    int pos = str.find(".", 0);
+    str.replace(pos, 1, ",");
+    return str;
 }

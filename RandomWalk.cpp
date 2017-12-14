@@ -23,23 +23,23 @@ RandomWalk::RandomWalk(int _vertex, double _lambda, double _gama, double _tau, S
     fileNameParmResult = outputDir + "/" + prefix + "_Results.txt";
     fileNameWalkingTimes = outputDir + "/" + prefix + "_walkingTimes.txt";
 
-    std::ofstream arq;
-
-    arq.open(fileName);
-    arq << "# Random Walk: " << code << std::endl;
-    arq << "# Parameters: Lambda: " << lambda << ", Gama: " << gama << ", Tau: " << tau << '\n';
-    arq << "# time,event,vertex,state,effect,infected_by" << '\n';
-
-    arq.close();
-
-    arq.open(fileNameParmResult);
-    arq << "# Parameters: Lambda: " << lambda << ", Gama: " << gama << ", Tau: " << tau << '\n';
-    arq << "# time,state_changed" << '\n';
-    arq.close();
-    
-    arq.open(fileNameWalkingTimes);
-    arq << "# Walking Times" << std::endl;
-    arq.close();
+//    std::ofstream arq;
+//
+//    arq.open(fileName);
+//    arq << "# Random Walk: " << code << std::endl;
+//    arq << "# Parameters: Lambda: " << lambda << ", Gama: " << gama << ", Tau: " << tau << '\n';
+//    arq << "# time,event,vertex,state,effect,infected_by" << '\n';
+//
+//    arq.close();
+//
+//    arq.open(fileNameParmResult);
+//    arq << "# Parameters: Lambda: " << lambda << ", Gama: " << gama << ", Tau: " << tau << '\n';
+//    arq << "# time,state_changed" << '\n';
+//    arq.close();
+//    
+//    arq.open(fileNameWalkingTimes);
+//    arq << "# Walking Times" << std::endl;
+//    arq.close();
 
 
 }
@@ -118,7 +118,7 @@ std::string RandomWalk::stateToString() {
 void RandomWalk::writeEvent(History history) {
     //std::cout << "RW: " << code << " ; Vertex: " << vertex << " ; Time: " << time << " ; Event: " << event.toString() << " ; State: " << stateToString() << std::endl;
     //writeFile(event, time);
-    writeFile(history);
+//    writeFile(history); 
 }
 
 void RandomWalk::writeFile(History history) {

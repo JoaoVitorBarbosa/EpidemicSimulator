@@ -73,8 +73,9 @@ std::string Simulator::eventToString(EventType evt) {
 
 void Simulator::fill_vertices(Params params) {
     // create directory to vertices 
+    // remove: don't create vertices directory to save space and be faster
     std::string verticesOutputDir = this->outputDir + "/Vertices";
-    Utils::createDirectory(verticesOutputDir);
+    //Utils::createDirectory(verticesOutputDir);
     
     for (int i = 0; i < graph.num_vertices; i++) {
         double p = params.Vertex.vertexParamVector[i] != NULL ? params.Vertex.vertexParamVector[i] : params.Vertex.p;
@@ -85,8 +86,9 @@ void Simulator::fill_vertices(Params params) {
 
 void Simulator::setupRandomWalks(RwParam rwParams) { 
     // create directory to random walks
-    std::string randomWalkOutputDir = this->outputDir + "/RandomWalks";
-    Utils::createDirectory(randomWalkOutputDir);
+    // remove after: disable writing for random walk to save space and be faster
+     std::string randomWalkOutputDir = this->outputDir + "/RandomWalks";
+    // Utils::createDirectory(randomWalkOutputDir);
     
     // select randomly random walks that must be infected
     std::map<int, bool> rwToInf;
@@ -173,6 +175,7 @@ Simulator::Simulator(Params params, std::string jsonStr, ManipulaGrafoV _graph) 
     fileNameInfectInterval = outputDir + "/infectedsInterval.txt";
     fileNameContractedInterval = outputDir + "/contractedInterval.txt";
     fileNameSusceptibleInterval = outputDir + "/susceptibleInterval.txt";
+    file_name_system_results = outputDir + "/epidemic_results.txt";
     
     // create file to store results
     fileNameNumberRandomWalkStates = outputDir + "/system_results.txt";
@@ -274,23 +277,17 @@ void Simulator::infect(Vertex * vertex, Event evt) {
         it++;
     }
 
-}
+} 
 
 void Simulator::beInfected(Vertex * v, Event evt) {
     RandomWalk * rw = randomWalks.at(evt.randomwalk);
-    bool inf = 1 - std::pow((1 - v->getP()), v->getRwInfecteds());
-    // increase number of encounters
-    // expected number of encounters
-    /*if(v->getP() == 1)
-        v->increase_encounters_by(1);
-    else if(v->getP() == 0)
-        v->increase_encounters_by(0);
-    else
-        v->increase_encounters_by(std::ceil(v->getRwInfecteds() - v->getRwInfecteds() * v->getP()));
-    */
+    double p = v->getP();
+    int infected = v->getRwInfecteds();
+    double new_p = 1 - std::pow((1 - p), infected);
+    bool inf = rg.bernoulli(new_p);
     
     if (inf) {
-        //v->increase_encounters_with_transmition_by(1);
+        v->sum_success_encounters(infected);
         
         double t_tau = time + rg.exponential(rw->getTau());
         Event evt_new(t_tau, evt.randomwalk, EventType::Infect);
@@ -312,6 +309,8 @@ void Simulator::beInfected(Vertex * v, Event evt) {
         // increase number of contracted
         changeNumberContracted(num_Contracted + 1);
     }
+    else
+        v->sum_fail_encounters(infected);
 }
 
 void Simulator::process_walk(Event evt) {
@@ -484,15 +483,15 @@ void Simulator::process() {
         // configure debug
         double percentual = time / limit_time_epidemic * 100;
 
-        if ((int) percentual != (int) old_percentual)
-            std::cout << std::fixed << percentual << "%" << std::endl;
+        //if ((int) percentual != (int) old_percentual)
+            //std::cout << std::fixed << percentual << "%" << std::endl;
         
         old_percentual = percentual;
     }
 
     //std::cout << "End epidemic" << std::endl;
-    
-    std::cout << "Tempo total de epidemia: " << time << std::endl;
+      
+    //std::cout << "#Tempo de simulação da epidemia: " << time << std::endl;
 
     // don't write to be fast, checking threshold
     /*for (int i = 0; i < randomWalks.size(); i++) {
@@ -502,8 +501,9 @@ void Simulator::process() {
     write_infected_intervals();
     write_contracted_intervals();
     write_susceptible_intervals();
+    */
     
-    for (int i = 0; i < vertices.size(); i++) {
+    /*for (int i = 0; i < vertices.size(); i++) {
         vertices[i]->writeTimeInfected(time);
     }*/
     

@@ -21,6 +21,7 @@
 #include "Simulator.h"
 #include "GraphGenerator.h"
 #include "EpidemicAnalysis.h"
+#include <vector>
 #include <unistd.h>
 #include <stdio.h>
 #include <boost/filesystem.hpp>
@@ -30,6 +31,7 @@
 #include <thread>
 #include <chrono>
 #include <mutex>
+#include "json.hpp"
 
 using namespace std;
 
@@ -46,6 +48,10 @@ public:
     /// \param paramsStr parameters in string form to print
     void start_simulation(Params params, std::string paramsStr);
     
+    void mean_time_epidemic_by_k(Params params, std::string strParams);
+    void mean_time_epidemic_by_n(Params params, std::string strParams);
+    void mean_time_epidemic_by_lambda(Params params, std::string strParams);
+    
 private:
     
     /// Create graph according to specified in params
@@ -60,10 +66,21 @@ private:
     /// \param run Represents id of run
     void run_simulation_in_thread(Params params, std::string paramsStr, ManipulaGrafoV graph, int run);
     
+    double std_desviation(double mean);
+    
     /// duration of all runs
     int aggregate_time_ms;
     double epidemic_time;
+    double avg_epidemic_time;
+    double std_epidemic_time;
+    std::vector<double> means;
+    std::vector<double> means_dur_execution;
     int do_analysis;
+    std::string output_dir;
+    
+    
+    boost::accumulators::accumulator_set<double, boost::accumulators::features<boost::accumulators::tag::mean, boost::accumulators::tag::variance>> time_epidemic_acc;
+    boost::accumulators::accumulator_set<double, boost::accumulators::features<boost::accumulators::tag::mean, boost::accumulators::tag::variance>> time_epidemic_execution_acc;
     
     /// Boost accumulator used to store duration of epidemic
     boost::accumulators::accumulator_set<double, boost::accumulators::features<boost::accumulators::tag::mean, boost::accumulators::tag::variance>> timeAccumulator;

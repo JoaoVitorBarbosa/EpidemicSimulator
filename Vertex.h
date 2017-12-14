@@ -20,7 +20,7 @@
 class Vertex {
     // number of rw infecteds
     int rwInfecteds;
-    // probability to rw be infected
+    // probability to rw be infected. Bernoulli parameter
     double p;
     // rw list. Store pointer to rw instead of vector index
     std::list<RandomWalk*> randomWalks;
@@ -34,6 +34,13 @@ class Vertex {
     // validation
     int total_encounters;
     int total_encounters_with_transmission;
+    
+    // store sum o k (infected rw) to encounters that generate infection 
+    int sum_success_k;
+    // store sum o k (infected rw) to encounters that don't generate infection 
+    int sum_fail_k;
+    
+    double get_empiric_p_type_1();
     
 public:
     std::string fileNameTimeResult;
@@ -69,6 +76,9 @@ public:
     
     void increase_encounters_by(int n);
     void increase_encounters_with_transmition_by(int n);
+    
+    void sum_fail_encounters(int k);
+    void sum_success_encounters(int k);
 };
 
 #endif /* VERTEX_H */

@@ -82,6 +82,7 @@ public:
     std::string fileNameContractedInterval;
     std::string fileNameSusceptibleInterval;
     std::string fileNameNumberRandomWalkStates;
+    std::string file_name_system_results;
     std::string outputDir;
     std::vector<RandomWalk*> randomWalks;
     std::priority_queue<Event> events;

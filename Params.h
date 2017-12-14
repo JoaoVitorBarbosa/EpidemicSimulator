@@ -26,7 +26,10 @@ struct RwParamArray{
 struct RwParam {
     int k;
     int ki;
+    double kiPer;
     double lambda;
+    std::string lambdaS;
+    std::vector<double> lambda_vector;
     double gama;
     double tau;
     std::string rwParamArray; // gets array of json from parameters file
@@ -44,7 +47,7 @@ enum GraphType{
     Ring = 1,
     Torus = 2,
     Clique = 3, 
-    Bipartite = 4
+    Bipartite = 4 // to create a star, pass n = 1 and n2 >= 1
 };
 
 struct GraphParam {
@@ -52,6 +55,8 @@ struct GraphParam {
     int n;
     int n2; // parameter for bipartite graph
     std::string path;
+    std::string NS;
+    std::vector<int> NS_vector;
 };
 
 
@@ -64,6 +69,9 @@ struct Params {
     RwParam Rw;
     VertexParam Vertex;
     std::string OutputDir;
+    std::string KS;
+    std::vector<int> KS_vector;
+    std::string Operation;
 };
 
 #endif /* PARAMS_H */

@@ -22,6 +22,14 @@ CND_ARTIFACT_PATH_Release=dist/Release/GNU-Linux/epidemic_simulator
 CND_PACKAGE_DIR_Release=dist/Release/GNU-Linux/package
 CND_PACKAGE_NAME_Release=epidemicsimulator.tar
 CND_PACKAGE_PATH_Release=dist/Release/GNU-Linux/package/epidemicsimulator.tar
+# Release_static configuration
+CND_PLATFORM_Release_static=GNU-Linux
+CND_ARTIFACT_DIR_Release_static=dist/Release_static/GNU-Linux
+CND_ARTIFACT_NAME_Release_static=epidemic_simulator
+CND_ARTIFACT_PATH_Release_static=dist/Release_static/GNU-Linux/epidemic_simulator
+CND_PACKAGE_DIR_Release_static=dist/Release_static/GNU-Linux/package
+CND_PACKAGE_NAME_Release_static=epidemicsimulator.tar
+CND_PACKAGE_PATH_Release_static=dist/Release_static/GNU-Linux/package/epidemicsimulator.tar
 #
 # include compiler specific variables
 #

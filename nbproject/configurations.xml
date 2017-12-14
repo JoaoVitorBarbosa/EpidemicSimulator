@@ -134,13 +134,13 @@
         </cTool>
         <ccTool>
           <developmentMode>5</developmentMode>
-          <standard>11</standard>
+          <standard>8</standard>
           <incDir>
             <pElem>/usr/include</pElem>
             <pElem>../../../../Desenvolvimento/gnuplot-iostream</pElem>
             <pElem>../ThirdParties/JSON</pElem>
           </incDir>
-          <commandLine>-pthread</commandLine>
+          <commandLine>-pthread -fopenmp</commandLine>
         </ccTool>
         <fortranCompilerTool>
           <developmentMode>5</developmentMode>
@@ -202,6 +202,89 @@
       <item path="data/OutputDirStructure.txt" ex="false" tool="3" flavor2="0">
       </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+    </conf>
+    <conf name="Release_static" type="1">
+      <toolsSet>
+        <compilerSet>default</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <compileType>
+        <cTool>
+          <developmentMode>5</developmentMode>
+        </cTool>
+        <ccTool>
+          <developmentMode>5</developmentMode>
+          <standard>8</standard>
+          <incDir>
+            <pElem>/usr/include</pElem>
+            <pElem>../../../../Desenvolvimento/gnuplot-iostream</pElem>
+            <pElem>../ThirdParties/JSON</pElem>
+          </incDir>
+          <commandLine>-pthread -fopenmp</commandLine>
+        </ccTool>
+        <fortranCompilerTool>
+          <developmentMode>5</developmentMode>
+        </fortranCompilerTool>
+        <asmTool>
+          <developmentMode>5</developmentMode>
+        </asmTool>
+        <linkerTool>
+          <linkerAddLib>
+            <pElem>/usr/lib/x86_64-linux-gnu</pElem>
+          </linkerAddLib>
+          <linkerLibItems>
+            <linkerLibLibItem>boost_filesystem</linkerLibLibItem>
+            <linkerLibLibItem>boost_iostreams</linkerLibLibItem>
+            <linkerLibLibItem>boost_system</linkerLibLibItem>
+          </linkerLibItems>
+          <commandLine>-static</commandLine>
+        </linkerTool>
+      </compileType>
+      <item path="Data/Params.json" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="EpidemicAnalysis.cpp" ex="false" tool="1" flavor2="8">
+      </item>
+      <item path="EpidemicAnalysis.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="EpidemicManager.cpp" ex="false" tool="1" flavor2="8">
+      </item>
+      <item path="EpidemicManager.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="Event.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="GraphGenerator.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ManipulaGrafo.cpp" ex="false" tool="1" flavor2="8">
+      </item>
+      <item path="ManipulaGrafo.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="Params.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="RandomGenerator.cpp" ex="false" tool="1" flavor2="8">
+      </item>
+      <item path="RandomGenerator.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="RandomWalk.cpp" ex="false" tool="1" flavor2="8">
+      </item>
+      <item path="RandomWalk.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="Simulator.cpp" ex="false" tool="1" flavor2="8">
+      </item>
+      <item path="Simulator.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="Utils.cpp" ex="false" tool="1" flavor2="8">
+      </item>
+      <item path="Utils.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="Vertex.cpp" ex="false" tool="1" flavor2="8">
+      </item>
+      <item path="Vertex.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="data/OutputDirStructure.txt" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="main.cpp" ex="false" tool="1" flavor2="8">
       </item>
     </conf>
   </confs>

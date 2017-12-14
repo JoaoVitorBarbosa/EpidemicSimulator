@@ -438,3 +438,105 @@ Stats EpidemicAnalysis::get_median(std::multiset<double> elems) {
     
     return stats;
 }
+
+void EpidemicAnalysis::mean_time_of_epidemic_over_k(std::vector<std::pair<double, double> > k_mean_time, int n)
+{
+    Gnuplot gp;
+
+    std::string filename = this->outputDir + "/epidemic_mean_time_by_k.gif";
+    
+    gp << "set title 'Tempo médio da epidemia com relação a k\n";
+    gp << "set xlabel 'Número de passeios aleatórios' \n";
+    gp << "set ylabel 'Tempo médio' \n";
+    gp << "set terminal gif \n";
+    std::cout << "filename: " << filename << "\n";
+    gp << "set output '" + filename + "' \n";
+    gp << "set key bottom right title 'N=" + std::to_string(n) + "' \n";
+    //gp << "set logscale y \n";
+    gp << "plot" << gp.file1d(k_mean_time) << "title 'media' with linespoints lt rgb '#FF0000' \n";   
+}
+
+void EpidemicAnalysis::std_time_of_epidemic_over_k(std::vector<std::pair<double, double> > k_std_time, int n)
+{
+    Gnuplot gp;
+
+    std::string filename = this->outputDir + "/epidemic_std_time_by_k.gif";
+    
+    gp << "set title 'Desvio padrão do tempo de epidemia com relação a k\n";
+    gp << "set xlabel 'Número de passeios aleatórios' \n";
+    gp << "set ylabel 'Desvio padrão' \n";
+    gp << "set termina gif \n";
+    std::cout << "filename: " << filename << "\n";
+    gp << "set output '" + filename + "' \n";
+    gp << "set key bottom right title 'N=" + std::to_string(n) + "' \n";
+    //gp << "set logscale y \n";
+    gp << "plot" << gp.file1d(k_std_time) << "title 'desvio padrao' with linespoints lt rgb '#FF0000' \n";   
+}
+
+void EpidemicAnalysis::mean_time_of_epidemic_over_n(std::vector<std::pair<double, double> > k_mean_time, int k)
+{
+    Gnuplot gp;
+
+    std::string filename = this->outputDir + "/epidemic_mean_time_by_n.gif";
+    
+    gp << "set title 'Tempo médio da epidemia com relação a k\n";
+    gp << "set xlabel 'Número de passeios aleatórios' \n";
+    gp << "set ylabel 'Tempo médio' \n";
+    gp << "set terminal gif \n";
+    std::cout << "filename: " << filename << "\n";
+    gp << "set output '" + filename + "' \n";
+    gp << "set key bottom right title 'K=" + std::to_string(k) + "' \n";
+    //gp << "set logscale y \n";
+    gp << "plot" << gp.file1d(k_mean_time) << "title 'media' with linespoints lt rgb '#FF0000' \n";   
+}
+
+void EpidemicAnalysis::std_time_of_epidemic_over_n(std::vector<std::pair<double, double> > k_std_time, int k)
+{
+    Gnuplot gp;
+
+    std::string filename = this->outputDir + "/epidemic_std_time_by_n.gif";
+    
+    gp << "set title 'Desvio padrão do tempo de epidemia com relação a k\n";
+    gp << "set xlabel 'Número de passeios aleatórios' \n";
+    gp << "set ylabel 'Desvio padrão' \n";
+    gp << "set termina gif \n";
+    std::cout << "filename: " << filename << "\n";
+    gp << "set output '" + filename + "' \n";
+    gp << "set key bottom right title 'K=" + std::to_string(k) + "' \n";
+    //gp << "set logscale y \n";
+    gp << "plot" << gp.file1d(k_std_time) << "title 'desvio padrao' with linespoints lt rgb '#FF0000' \n";   
+}
+
+void EpidemicAnalysis::mean_time_of_epidemic_over_lambda(std::vector<std::pair<double, double> > k_mean_time, int n)
+{
+    Gnuplot gp;
+
+    std::string filename = this->outputDir + "/epidemic_mean_time_by_lambda.gif";
+    
+    gp << "set title 'Tempo médio da epidemia com relação a k\n";
+    gp << "set xlabel 'Número de passeios aleatórios' \n";
+    gp << "set ylabel 'Tempo médio' \n";
+    gp << "set terminal gif \n";
+    std::cout << "filename: " << filename << "\n";
+    gp << "set output '" + filename + "' \n";
+    gp << "set key bottom right title 'N=" + std::to_string(n) + "' \n";
+    //gp << "set logscale y \n";
+    gp << "plot" << gp.file1d(k_mean_time) << "title 'media' with linespoints lt rgb '#FF0000' \n";   
+}
+
+void EpidemicAnalysis::std_time_of_epidemic_over_lambda(std::vector<std::pair<double, double> > k_std_time, int n)
+{
+    Gnuplot gp;
+
+    std::string filename = this->outputDir + "/epidemic_std_time_by_lambda.gif";
+    
+    gp << "set title 'Desvio padrão do tempo de epidemia com relação a k\n";
+    gp << "set xlabel 'Número de passeios aleatórios' \n";
+    gp << "set ylabel 'Desvio padrão' \n";
+    gp << "set termina gif \n";
+    std::cout << "filename: " << filename << "\n";
+    gp << "set output '" + filename + "' \n";
+    gp << "set key bottom right title 'N=" + std::to_string(n) + "' \n";
+    //gp << "set logscale y \n";
+    gp << "plot" << gp.file1d(k_std_time) << "title 'desvio padrao' with linespoints lt rgb '#FF0000' \n";   
+}

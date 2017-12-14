@@ -23,7 +23,7 @@ AS=as
 # Macros
 CND_PLATFORM=GNU-Linux
 CND_DLIB_EXT=so
-CND_CONF=Release
+CND_CONF=Release_static
 CND_DISTDIR=dist
 CND_BUILDDIR=build
 
@@ -68,7 +68,7 @@ LDLIBSOPTIONS=-L/usr/lib/x86_64-linux-gnu -lboost_filesystem -lboost_iostreams -
 
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/epidemic_simulator: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
-	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/epidemic_simulator ${OBJECTFILES} ${LDLIBSOPTIONS}
+	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/epidemic_simulator ${OBJECTFILES} ${LDLIBSOPTIONS} -static
 
 ${OBJECTDIR}/EpidemicAnalysis.o: EpidemicAnalysis.cpp
 	${MKDIR} -p ${OBJECTDIR}

@@ -1,0 +1,1 @@
+g++ -pthread -c -O2 -I/usr/include -I../../../../Desenvolvimento/gnuplot-iostream -I../ThirdParties/JSON -std=c++14 -MMD -MP -MF "build/Release/GNU-Linux/Simulator.o.d" -o build/Release/GNU-Linux Simulator.o Simulator.cpp
