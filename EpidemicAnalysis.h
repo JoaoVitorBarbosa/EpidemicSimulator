@@ -25,7 +25,7 @@
 #include <boost/accumulators/accumulators.hpp>
 #include <boost/accumulators/statistics.hpp>
 #include "Params.h"
-
+#include "Logger.h"
 
 struct Stats{
     double mean;

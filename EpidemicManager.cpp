@@ -43,12 +43,14 @@ ManipulaGrafoV EpidemicManager::create_graph(Params params) {
 }
 
 void EpidemicManager::mean_time_epidemic_by_k(Params params, std::string strParams) {
+    Logger::Info("Running epidemic changing k");
+    
     std::vector<std::pair<double, double> > k_mean_time;
     std::vector<std::pair<double, double> > k_std_time;
     int N = params.Graph.n;
 
     std::string fName = Utils::datetime_now_to_string();
-    params.OutputDir = params.OutputDir + "/" + fName + "_simluation_by_k";
+    params.OutputDir = params.OutputDir + "/" + fName + "_simluation_by_k_" + std::to_string(params.Time) + "_" + std::to_string(params.Graph.n) + "_" + std::to_string(params.Rw.k) + "_" + std::to_string(params.Rw.ki) + "_" + std::to_string(params.Rw.kiPer) + "_" + std::to_string(params.Rw.lambda) + "_" + std::to_string(params.Rw.gama) + "_" + std::to_string(params.Runs);
     Utils::createDirectory(params.OutputDir);
     std::string filename_mean_std_time = params.OutputDir + "/time_std_values.txt";
 
@@ -56,10 +58,11 @@ void EpidemicManager::mean_time_epidemic_by_k(Params params, std::string strPara
 
     for (int i = 0; i < params.KS_vector.size(); i++) {
         params.Rw.k = params.KS_vector[i];
-
+        params.Rw.ki = params.Rw.kiPer * params.Rw.k < 1 ? 1 : params.Rw.kiPer * params.Rw.k;
+        
         // phase transition
         if (avg_epidemic_time >= params.Time) {
-            std::cout << "Phase transition achieved, stop varying k. Setting Time limit for avg_time" << std::endl;
+            Logger::Info("Phase transition achieved, stop varying k. Setting Time limit for avg_time");
 
             avg_epidemic_time = params.Time;
             std_epidemic_time = 0.0012;
@@ -84,6 +87,8 @@ void EpidemicManager::mean_time_epidemic_by_k(Params params, std::string strPara
 }
 
 void EpidemicManager::mean_time_epidemic_by_n(Params params, std::string strParams) {
+    Logger::Info("Running epidemic changing n");
+    
     std::vector<std::pair<double, double> > n_mean_time;
     std::vector<std::pair<double, double> > n_std_time;
     int K = params.Rw.k;
@@ -113,6 +118,8 @@ void EpidemicManager::mean_time_epidemic_by_n(Params params, std::string strPara
 }
 
 void EpidemicManager::mean_time_epidemic_by_lambda(Params params, std::string strParams) {
+    Logger::Info("Running epidemic changing lambda");
+    
     std::vector<std::pair<double, double> > lambda_mean_time;
     std::vector<std::pair<double, double> > lambda_std_time;
     int K = params.Rw.k;
@@ -152,6 +159,15 @@ void EpidemicManager::mean_time_epidemic_by_lambda(Params params, std::string st
 }
 
 void EpidemicManager::start_simulation(Params params, std::string strParams) {
+    Logger::Info("Running epidemic.\nParameters:\n   graph: " 
+            + std::to_string(params.Graph.Type) 
+            + "\n   n: " + std::to_string(params.Graph.n)
+            + "\n   k: " + std::to_string(params.Rw.k)
+            + "\n   ki: " + std::to_string(params.Rw.kiPer)
+            + "\n   lambda: " + std::to_string(params.Rw.lambda)
+            + "\n   gama: " + std::to_string(params.Rw.gama)
+            + "\n   runs: " + std::to_string(params.Runs));
+    
     epidemic_time = 0;
     std_epidemic_time = 0;
     means.clear();
@@ -160,7 +176,7 @@ void EpidemicManager::start_simulation(Params params, std::string strParams) {
 
     std::string fName = Utils::datetime_now_to_string();
 
-    params.OutputDir = params.OutputDir + "/" + fName + "_" + std::to_string(params.Time) + "_" + std::to_string(params.Graph.n) + "_" + std::to_string(params.Rw.k) + params.OutputDir = params.OutputDir + "/" + fName + "_" + std::to_string(params.Time) + "_" + std::to_string(params.Graph.n) + "_" + std::to_string(params.Rw.k) + "_" + std::to_string(params.Rw.lambda) + "_" + std::to_string(params.Runs);
+    params.OutputDir = params.OutputDir + "/" + fName + "_" + std::to_string(params.Time) + "_" + std::to_string(params.Graph.n) + "_" + std::to_string(params.Rw.k) + params.OutputDir = params.OutputDir + "/" + fName + "_" + std::to_string(params.Time) + "_" + std::to_string(params.Graph.n) + "_" + std::to_string(params.Rw.k) + "_" + std::to_string(params.Rw.kiPer) + "_" + std::to_string(params.Rw.lambda) + "_" + std::to_string(params.Runs);
     +"_" + std::to_string(params.Runs);
     output_dir = params.OutputDir;
     Utils::createDirectory(params.OutputDir);
@@ -172,57 +188,47 @@ void EpidemicManager::start_simulation(Params params, std::string strParams) {
     arq << strParams << "\n";
     arq.close();
 
-    std::cout << "Starting simulation" << "\n";
-
     int num_threads = params.Runs;
 
     //std::thread * threads = new std::thread[num_threads];
 
 #pragma omp parallel for
     for (int i = 0; i < params.Runs; i++) {
-        //threads[i] = std::thread(&EpidemicManager::run_simulation_in_thread, this, params, strParams, graph, i);
         run_simulation_in_thread(params, strParams, graph, i);
     }
 
-    //for (int i = 0; i < params.Runs; i++)
-    //        threads[i].join();
-
     avg_epidemic_time = epidemic_time / (double) params.Runs;
-    std_epidemic_time = std_desviation(avg_epidemic_time);
+    TimeStatistics time_stats = time_epidemic_statistics(avg_epidemic_time);
+    std_epidemic_time = time_stats.std;
 
-    std::cout << "\n";
+    /*std::cout << "\n";
     std::cout << "N: " << params.Graph.n << "\n";
     std::cout << "K: " << params.Rw.k << "\n";
     std::cout << "Tempo médio de execução da epidemia " << (aggregate_time_ms / params.Runs) / 1000.00 << "s" << std::endl;
     std::cout << "Tempo médio de simulação da epidemia " << avg_epidemic_time << std::endl;
-    std::cout << "\n";
+    std::cout << "\n";*/
 
     std::string file_all = params.OutputDir + "/results.txt";
 
     arq.open(file_all, std::ofstream::out | std::ofstream::app);
-    //arq << "Tempo médio da epidemia: " << boost::accumulators::mean(time_epidemic_acc) << '\n';
+    arq << "Parametros\n";
+    arq << "K: " << params.Rw.k << "\n";
+    arq << "Ki_Per: " << params.Rw.kiPer << " Ki: " << params.Rw.ki << "\n";
     arq << "Tempo médio da epidemia: " << avg_epidemic_time << '\n';
-    //arq << "Desvio padrão tempo da epidemia: " << sqrt(boost::accumulators::variance(time_epidemic_acc)) << " | " << std_epidemic_time << '\n';
-    arq << "Desvio padrão tempo da epidemia: " << std_epidemic_time << '\n';
-
+    arq << "Desvio padrão tempo da epidemia: " << time_stats.std << '\n';
+    arq << "Menor tempo: " << time_stats.min << "\n";
+    arq << "Maior tempo: " << time_stats.max << "\n";
     arq << "Tempo médio de execução: " << (aggregate_time_ms / params.Runs) / 1000.00 << "s" << '\n';
-    // don't work when used with mean_time_epidemic... accumulator doesn't have clear method
-    //arq << "Desvio padrão tempo de execução: " << sqrt(boost::accumulators::variance(time_epidemic_execution_acc)) / 1000. << "s" << '\n';
+    arq << "\n";
+    arq << "Rodada" << std::setw(20) << "Tempo" << "\n";
+    for(int i=0; i < means.size(); i++)
+        arq << std::get<0>(means.at(i)) << std::setw(25) << std::get<1>(means.at(i)) << "\n";
 
     arq.close();
-
-    //delete [] threads;
-
-    /*std::cout << "Tempo médio de epidemia: " << boost::accumulators::mean(timeAccumulator) << std::endl;
-    std::cout << "Desvio padrão do tempo de epidemia: " << std::sqrt(boost::accumulators::variance(timeAccumulator)) << std::endl;
-
-    std::cout << "Média de infecções: " << boost::accumulators::mean(infectionsAccumulator) << std::endl;
-    std::cout << "Desvio padrão do número de infecções: " << std::sqrt(boost::accumulators::variance(infectionsAccumulator)) << std::endl;*/
-
 }
 
 void EpidemicManager::run_simulation_in_thread(Params params, std::string strParams, ManipulaGrafoV graph, int run) {
-    std::cout << "--------- ROUND " << run << " --------- \n";
+    Logger::Info("--------- ROUND " + std::to_string(run) + " --------- \n");
 
     // creating directory
     Params paramsR = params;
@@ -250,11 +256,11 @@ void EpidemicManager::run_simulation_in_thread(Params params, std::string strPar
 
     epidemic_time += sim->time;
     time_epidemic_acc(sim->time);
-    means.push_back(sim->time);
+    means.push_back(std::make_tuple(run, sim->time));
     mtx.unlock();
     double time_s = duration / 1000.;
 
-    std::cout << "Tempo de execução da epidemia: " << time_s << "s" << std::endl;
+    //std::cout << "Tempo de execução da epidemia: " << time_s << "s" << std::endl;
 
     std::ofstream arq;
     arq.open(sim->file_name_system_results, std::ofstream::out | std::ofstream::app);
@@ -278,8 +284,8 @@ void EpidemicManager::run_simulation_in_thread(Params params, std::string strPar
         ep->outputDir = analysisDir + "/RandomWalks";
         Utils::createDirectory(ep->outputDir);
         for (int i = 0; i < sim->randomWalks.size(); i++) {
-            ep->getRandomWalkCCDFAndStatistics(sim->randomWalks.at(i)->fileNameParmResult, std::to_string(i), sim->randomWalks.at(i)->gama, sim->randomWalks.at(i)->tau);
-            ep->RandomWalkWalkingCCDF(sim->randomWalks.at(i)->fileNameWalkingTimes, std::to_string(i), sim->randomWalks.at(i)->lambda);
+            ep->getRandomWalkCCDFAndStatistics(sim->randomWalks.at(i)->file_name_sample_results, std::to_string(i), sim->randomWalks.at(i)->gama, sim->randomWalks.at(i)->tau);
+            ep->RandomWalkWalkingCCDF(sim->randomWalks.at(i)->file_name_walking_times, std::to_string(i), sim->randomWalks.at(i)->lambda);
         }
 
         ep->outputDir = analysisDir + "/Vertices";
@@ -297,14 +303,31 @@ void EpidemicManager::run_simulation_in_thread(Params params, std::string strPar
 
     delete sim;
 
-    std::cout << "--------- END ROUND " << run << " --------- \n";
+    Logger::Info("--------- END ROUND " + std::to_string(run) + " --------- \n");
 
 }
 
-double EpidemicManager::std_desviation(double mean) {
+TimeStatistics EpidemicManager::time_epidemic_statistics(double mean) {
     double sum = 0.0;
+    double max = 0.0;
+    double min = INT64_MAX;
     for (int i = 0; i < means.size(); i++)
-        sum += std::pow(means.at(i) - mean, 2);
+    {
+        double time = std::get<1>(means.at(i));
+        sum += std::pow(time - mean, 2);
+        if(time > max)
+            max = time;
+        if(time < min)
+            min = time;
+    }
+    
     sum = sum / (double) means.size();
-    return sqrt(sum);
+    double std = sqrt(sum);
+    TimeStatistics t;
+    t.mean = mean;
+    t.max = max;
+    t.min = min;
+    t.std = std;
+    
+    return t;
 }

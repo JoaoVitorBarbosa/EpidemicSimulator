@@ -108,10 +108,10 @@ void Simulator::setupRandomWalks(RwParam rwParams) {
                 : new RandomWalk(vp, rwParams.lambda, rwParams.gama, rwParams.tau, s, i, randomWalkOutputDir);
         randomWalks.push_back(rw);
 
-        rw->setRwPosition(vertices[vp]->setRandomWalk(rw));
+        rw->set_rw_position(vertices[vp]->setRandomWalk(rw));
         
-        if (rw->getState() == State::Infected) {
-            double t_recover = time + rg.exponential(rw->getGama());
+        if (rw->get_state() == State::Infected) {
+            double t_recover = time + rg.exponential(rw->get_gama());
             Event evtRec(t_recover, i, EventType::Recover);
             events.push(evtRec);
 
@@ -124,11 +124,11 @@ void Simulator::setupRandomWalks(RwParam rwParams) {
         } else
             rw->setTimeStateChange(0.0, 0);
         
-        if(rw->getState() == State::Contracted)
+        if(rw->get_state() == State::Contracted)
             changeNumberContracted(num_Contracted + 1);
 
         //walk event
-        double timeToWalk = rg.exponential(randomWalks[i]->getLambda());
+        double timeToWalk = rg.exponential(randomWalks[i]->get_lambda());
         rw->insertTimeWalking(timeToWalk);
 
         double walkTime = time + timeToWalk;
@@ -136,7 +136,7 @@ void Simulator::setupRandomWalks(RwParam rwParams) {
         events.push(evt);
 
         // write first event (creation)
-        History history(rw->getCode(), rw->getVertex(), time, rw->stateToString(), eventToString(evt.type), "-");
+        History history(rw->get_code(), rw->get_vertex(), time, rw->state_to_string(), eventToString(evt.type), "-");
         rw->writeEvent(history);
     }
 
@@ -144,7 +144,7 @@ void Simulator::setupRandomWalks(RwParam rwParams) {
 
 void Simulator::fillEvents() {
     for (int i = 0; i < randomWalks.size(); i++) {
-        double walkTime = rg.exponential(randomWalks[i]->getLambda());
+        double walkTime = rg.exponential(randomWalks[i]->get_lambda());
         Event evt(walkTime, i, EventType::Walk);
 
         events.push(evt);
@@ -243,7 +243,7 @@ void Simulator::infect(Vertex * vertex, Event evt) {
 
     std::list<RandomWalk*>::iterator it = vertex->getRandomWalkList().begin();
     for (int i = 0; i < vertex->getRandomWalkList().size(); i++) {
-        if ((*it)->getState() == State::Susceptible) {
+        if ((*it)->get_state() == State::Susceptible) {
             // increase encounters number
             vertex->increase_encounters_by(1);
             
@@ -253,21 +253,21 @@ void Simulator::infect(Vertex * vertex, Event evt) {
                 // encounter had transmission
                 vertex->increase_encounters_with_transmition_by(1);
                 
-                double t_tau = time + rg.exponential((*it)->getTau());
-                Event evt_new(t_tau, (*it)->getCode(), EventType::Infect);
+                double t_tau = time + rg.exponential((*it)->get_tau());
+                Event evt_new(t_tau, (*it)->get_code(), EventType::Infect);
                 events.push(evt_new);
 
                 // write snapshot of states
-                writeNumberRwStatePerTime();
+                writeNumberRwStatePerTime("contract");//evt.toString());
     
-                (*it)->setState(State::Contracted);
+                (*it)->set_state(State::Contracted);
                 (*it)->setTimeStateChange(time, State::Contracted);
                 num_Inf_Events++;
                 infectionTimes++; // increase number of infections
 
                 (*it)->insertTimeContracted(t_tau - time);
 
-                History history((*it)->getCode(), (*it)->getVertex(), time, (*it)->stateToString(), "-", "Infected", evt.randomwalk);
+                History history((*it)->get_code(), (*it)->get_vertex(), time, (*it)->state_to_string(), "-", "Infected", evt.randomwalk);
                 (*it)->writeEvent(history);
                 
                 // increase number of contracted
@@ -289,21 +289,21 @@ void Simulator::beInfected(Vertex * v, Event evt) {
     if (inf) {
         v->sum_success_encounters(infected);
         
-        double t_tau = time + rg.exponential(rw->getTau());
+        double t_tau = time + rg.exponential(rw->get_tau());
         Event evt_new(t_tau, evt.randomwalk, EventType::Infect);
         events.push(evt_new);
 
         // write snapshot of states
-        writeNumberRwStatePerTime();
+        writeNumberRwStatePerTime("contract");//evt.toString());
     
-        rw->setState(State::Contracted);
+        rw->set_state(State::Contracted);
         rw->setTimeStateChange(time, State::Contracted);
         num_Inf_Events++;
         infectionTimes++;
 
         rw->insertTimeContracted(t_tau - time);
 
-        History history(rw->getCode(), rw->getVertex(), time, rw->stateToString(), "-", "Infected");
+        History history(rw->get_code(), rw->get_vertex(), time, rw->state_to_string(), "-", "Infected");
         rw->writeEvent(history);
         
         // increase number of contracted
@@ -317,7 +317,7 @@ void Simulator::process_walk(Event evt) {
     RandomWalk * rw = randomWalks.at(evt.randomwalk);
 
     // new time to walk
-    double timeToWalk = rg.exponential(rw->getLambda());
+    double timeToWalk = rg.exponential(rw->get_lambda());
     rw->insertTimeWalking(timeToWalk);
 
     double t_walk = timeToWalk + time;
@@ -327,7 +327,7 @@ void Simulator::process_walk(Event evt) {
     events.push(evt_new);
 
     // get neighbor (vertex) to go
-    int vIndex = rw->getVertex();
+    int vIndex = rw->get_vertex();
     Vertex * srcVertex = vertices.at(vIndex);
     std::vector<unsigned int> neighbors = graph.get_vizinhos(vIndex + 1);
     int degree = graph.getGrau(vIndex + 1);
@@ -335,46 +335,46 @@ void Simulator::process_walk(Event evt) {
     int vertexNeighbor = neighbors.at(indexN);
 
     // delete rw in old vertex
-    srcVertex->eraseRandomWalk(rw->getRwPosition());
+    srcVertex->eraseRandomWalk(rw->get_rw_position());
 
     // vertex needs to be a pointer, if not gets a copy and don't change the real vertex in vector
     Vertex * dstVertex = vertices.at(vertexNeighbor - 1);
-    randomWalks.at(evt.randomwalk)->setRwPosition(dstVertex->setRandomWalk(rw));
-    randomWalks.at(evt.randomwalk)->setVertex(vertexNeighbor - 1);
+    randomWalks.at(evt.randomwalk)->set_rw_position(dstVertex->setRandomWalk(rw));
+    randomWalks.at(evt.randomwalk)->set_vertex(vertexNeighbor - 1);
 
     //std::cout << "Vertex to go: " << vertexNeighbor -1 << std::endl;
 
-    History history(rw->getCode(), rw->getVertex(), time, rw->stateToString(), eventToString(evt.type), "-");
+    History history(rw->get_code(), rw->get_vertex(), time, rw->state_to_string(), eventToString(evt.type), "-");
     rw->writeEvent(history);
 
 
-    if (rw->getState() == State::Infected) {
+    if (rw->get_state() == State::Infected) {
         srcVertex->decreaseRwInfecteds(time);
         dstVertex->increaseRwInfecteds(time);
         infect(dstVertex, evt);
-    } else if (rw->getState() == State::Susceptible)
+    } else if (rw->get_state() == State::Susceptible)
         beInfected(dstVertex, evt);
 }
 
 void Simulator::process_infect(Event evt) {
     // write snapshot of states
-    writeNumberRwStatePerTime();
+    writeNumberRwStatePerTime(evt.toString());
     
     RandomWalk * rw = randomWalks.at(evt.randomwalk);
-    rw->setState(State::Infected);
+    rw->set_state(State::Infected);
     rw->setTimeStateChange(time, State::Infected);
 
     // generate time to recover
-    double t_recover = time + rg.exponential(rw->getGama());
+    double t_recover = time + rg.exponential(rw->get_gama());
     Event evt_new(t_recover, evt.randomwalk, EventType::Recover);
     events.push(evt_new);
 
-    History history(rw->getCode(), rw->getVertex(), time, rw->stateToString(), eventToString(evt.type), "-");
+    History history(rw->get_code(), rw->get_vertex(), time, rw->state_to_string(), eventToString(evt.type), "-");
     rw->writeEvent(history);
     rw->insertTimeInfected(t_recover - time);
 
     // increase number of vertices infected
-    Vertex * vertex = vertices.at(rw->getVertex());
+    Vertex * vertex = vertices.at(rw->get_vertex());
     vertex->increaseRwInfecteds(time);
 
     change_infected_number(num_Infected + 1);
@@ -388,30 +388,30 @@ void Simulator::process_infect(Event evt) {
 
 void Simulator::process_heal(Event evt) {
     // write snapshot of states
-    writeNumberRwStatePerTime();
+    writeNumberRwStatePerTime(evt.toString());
     
     RandomWalk * rw = randomWalks.at(evt.randomwalk);
-    rw->setState(State::Susceptible);
+    rw->set_state(State::Susceptible);
     rw->setTimeStateChange(time, State::Susceptible);
 
-    History history(rw->getCode(), rw->getVertex(), time, rw->stateToString(), eventToString(evt.type), "-");
+    History history(rw->get_code(), rw->get_vertex(), time, rw->state_to_string(), eventToString(evt.type), "-");
     rw->writeEvent(history);
 
     change_infected_number(num_Infected - 1);
 
-    Vertex * vertex = vertices.at(rw->getVertex());
+    Vertex * vertex = vertices.at(rw->get_vertex());
     vertex->decreaseRwInfecteds(time);
 
     beInfected(vertex, evt);
 }
 
-void Simulator::writeNumberRwStatePerTime() {
+void Simulator::writeNumberRwStatePerTime(std::string evt) {
     // disable all file writing to be faster
-    /*
-    std::ofstream arq;
+    
+    /*std::ofstream arq;
     arq.open(fileNameNumberRandomWalkStates, std::ofstream::out | std::ofstream::app);
 
-    arq << std::fixed << time << "," << num_Infected << "," << num_Inf_Events << "," << k - (num_Infected + num_Inf_Events) << std::endl;
+    arq << std::fixed << time << "," << num_Infected << "," << num_Inf_Events << "," << k - (num_Infected + num_Inf_Events) << "," << evt << std::endl;
 
     arq.close();*/
 }
@@ -477,8 +477,8 @@ void Simulator::process() {
                 break;
         }
 
-        //if (evt.type != EventType::Walk)
-            //writeNumberRwStatePerTime();
+//        if (evt.type != EventType::Walk)
+//            writeNumberRwStatePerTime(evt.toString());
         
         // configure debug
         double percentual = time / limit_time_epidemic * 100;

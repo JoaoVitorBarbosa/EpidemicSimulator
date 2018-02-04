@@ -71,7 +71,7 @@ class Simulator {
     void infect(Vertex * v, Event evt);
     void beInfected(Vertex * v, Event evt);
     std::string eventToString(EventType evt);
-    void writeNumberRwStatePerTime();
+    void writeNumberRwStatePerTime(std::string evt);
 
 public:
     double time;

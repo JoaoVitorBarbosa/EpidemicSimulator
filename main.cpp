@@ -24,12 +24,16 @@
 #include "Params.h"
 #include "json.hpp"
 #include <thread>
+#include "Logger.h"
 
 using namespace std;
 
 // json
 // https://github.com/nlohmann/json
 using json = nlohmann::json;
+
+// static properties must be defined after class declaration
+LogLevel Logger::level = LogLevel::Debug;
 
 void to_json(json& j, const Params& p) {
     j = json{
@@ -39,6 +43,7 @@ void to_json(json& j, const Params& p) {
         {"Operation", p.Operation},
         {"p", p.p},
         {"KS", p.KS},
+        {"DebugLevel", p.DebugLevel},
         {"GraphParam",
             {
                 {"Type", p.Graph.Type},
@@ -88,6 +93,7 @@ void from_json(const json& j, Params& p) {
     p.Vertex.vertexParamArray = j.at("VertexParam").at("vertexParamArray").get<std::string>();
     p.KS = j.at("KS").get<std::string>();
     p.Operation = j.at("Operation").get<std::string>();
+    p.DebugLevel = j.at("DebugLevel").get<int>();
 }
 
 void validation() {
@@ -112,15 +118,15 @@ void test() {
 
     Vertex v1;
     RandomWalk *rw = new RandomWalk();
-    rw->setGama(2.0);
+    rw->set_gama(2.0);
 
     std::cout << v1.getRandomWalkList().size() << std::endl;
 
-    rw->setRwPosition(v1.setRandomWalk(rw));
+    rw->set_rw_position(v1.setRandomWalk(rw));
 
     std::cout << v1.getRandomWalkList().size() << std::endl;
 
-    v1.getRandomWalkList().erase(rw->getRwPosition());
+    v1.getRandomWalkList().erase(rw->get_rw_position());
 
     std::cout << v1.getRandomWalkList().size() << std::endl;
 
@@ -154,7 +160,6 @@ void ploting_expotential(){
     //gp.send1d(susceptiblesPts);
 }
 
-
 void validate_torus(){
     int n = 4;
     ManipulaGrafoV graph;
@@ -168,8 +173,22 @@ void validate_torus(){
     }
 }
 
+void validate_star(){
+    int n1 = 1;
+    int n = 10;
+    ManipulaGrafoV graph;
+    graph = GraphGenerator::Bipartite(n, n1);
+    for(int i = 1; i <= graph.num_vertices; i++)
+    {
+        std::cout << i << " | ";
+        for(int j = 0; j < graph.get_vizinhos(i).size(); j++)
+            std::cout << graph.get_vizinhos(i)[j] << " ";
+        std::cout << std::endl;
+    }
+}
+
 int main(int argc, char** argv) {
-    
+
     if (argc < 2) {
         std::cerr << "Missing filepath parameter." << std::endl;
         //return 0;
@@ -233,9 +252,18 @@ int main(int argc, char** argv) {
         if(argc > 8)
             params.OutputDir = argv[8];
         
+        if(argc > 9)
+            params.Rw.lambda = atof(argv[9]);
+        
+        if(argc > 10)
+            params.Rw.gama = atof(argv[10]);
+        
+        
         params.Rw.ki = params.Rw.k * params.Rw.kiPer;
         
         j = params;
+        
+        Logger::level = (LogLevel) params.DebugLevel;
         
         EpidemicManager manager(false);
         
@@ -249,7 +277,12 @@ int main(int argc, char** argv) {
             manager.mean_time_epidemic_by_lambda(params, j.dump(4));
 
     } catch (exception& e) {
-        std::cerr << "Error while parsing parameter file: . " << argv[1] << " Erro: " << e.what() << std::endl;
+        std::string str = "Error while parsing parameter file: ";
+        str += argv[1];
+        str += " Erro: ";
+        str += e.what();
+
+        Logger::Error(str);
     }
 
     return 0;

@@ -8,6 +8,7 @@
       <itemPath>EpidemicManager.h</itemPath>
       <itemPath>Event.h</itemPath>
       <itemPath>GraphGenerator.h</itemPath>
+      <itemPath>Logger.h</itemPath>
       <itemPath>ManipulaGrafo.h</itemPath>
       <itemPath>Params.h</itemPath>
       <itemPath>RandomGenerator.h</itemPath>
@@ -91,6 +92,8 @@
       </item>
       <item path="GraphGenerator.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="Logger.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="ManipulaGrafo.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="ManipulaGrafo.h" ex="false" tool="3" flavor2="0">
@@ -172,6 +175,8 @@
       <item path="Event.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="GraphGenerator.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="Logger.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="ManipulaGrafo.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -255,6 +260,8 @@
       <item path="Event.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="GraphGenerator.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="Logger.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="ManipulaGrafo.cpp" ex="false" tool="1" flavor2="8">
       </item>

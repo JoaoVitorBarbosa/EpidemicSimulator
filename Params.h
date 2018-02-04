@@ -65,6 +65,7 @@ struct Params {
     int Time;
     int Runs;
     double p;
+    int DebugLevel;
     GraphParam Graph;
     RwParam Rw;
     VertexParam Vertex;

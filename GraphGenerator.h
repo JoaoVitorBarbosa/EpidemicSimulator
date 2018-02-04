@@ -14,6 +14,7 @@
 #define GRAPHGENERATOR_H
 
 #include "ManipulaGrafo.h"
+#include "Logger.h"
 
 class GraphGenerator {
 public:
@@ -23,6 +24,8 @@ public:
     /// \return Ring graph
 
     static ManipulaGrafoV Ring(int n) {
+        Logger::Trace("Generating Ring");
+        
         ManipulaGrafoV graph;
         graph.inicializaGrafo(n);
 
@@ -39,6 +42,8 @@ public:
     /// \return Clique Graph
 
     static ManipulaGrafoV Clique(int n) {
+        Logger::Trace("Generating Clique");
+        
         ManipulaGrafoV graph;
         graph.inicializaGrafo(n);
         for (int i = 0; i < n; i++)
@@ -50,6 +55,8 @@ public:
     }
 
     static ManipulaGrafoV Torus(int n) {
+        Logger::Trace("Generating Torus");
+
         int N = n*n;
         ManipulaGrafoV graph;
         graph.inicializaGrafo(N);
@@ -121,6 +128,8 @@ public:
     /// \return Bipartite Graph
 
     static ManipulaGrafoV Bipartite(int n, int n2) {
+        (n == 1 || n2 == 1) ? Logger::Trace("Generating star") : Logger::Trace("Generating Bipartide graph");
+        
         ManipulaGrafoV graph;
         graph.inicializaGrafo(n + n2);
         for (int i = 0; i < n; i++)

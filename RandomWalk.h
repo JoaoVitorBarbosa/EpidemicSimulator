@@ -58,7 +58,7 @@ struct History {
     std::string event;
     std::string effect;
 
-    std::string getRWInfected() {
+    std::string get_num_rw_infected() {
         return rw_inf == -1 ? "" : std::to_string(rw_inf);
     }
 };
@@ -71,16 +71,16 @@ public:
     // code of rw
     int code;
     // position of rw in vetex rw vector
-    std::list<RandomWalk*>::iterator rwIt;
+    std::list<RandomWalk*>::iterator rw_iterator;
     double lambda;
     double gama;
     double tau;
     State state;
-    bool infectEvent; 
-    std::string fileName;
-    std::string fileNameParmResult;
-    std::string fileNameWalkingTimes;
-    std::string outputDir;
+    bool infect_event; 
+    std::string file_name_history;
+    std::string file_name_sample_results;
+    std::string file_name_walking_times;
+    std::string output_dir;
 
     // store time intervals that rw spend in infected state
     boost::accumulators::accumulator_set<double, boost::accumulators::features<boost::accumulators::tag::mean, boost::accumulators::tag::median, boost::accumulators::tag::variance>> intervalsWalking;
@@ -88,35 +88,35 @@ public:
     boost::accumulators::accumulator_set<double, boost::accumulators::features<boost::accumulators::tag::mean, boost::accumulators::tag::median, boost::accumulators::tag::variance>> intervalsContracted;
 
     // store timestamp and state when state transition occurs
-    std::vector<std::pair<double, int>> timeStampStatesChange;
+    std::vector<std::pair<double, int>> state_timestamps;
 
     RandomWalk();
     RandomWalk(int v, double lambda, double gama, double tau, State, int code, std::string _outputDir);
 
-    void setVertex(int);
-    int getVertex();
+    void set_vertex(int);
+    int get_vertex();
 
-    void setCode(int);
-    int getCode();
+    void set_code(int);
+    int get_code();
 
-    void setState(State);
-    State getState();
+    void set_state(State);
+    State get_state();
 
-    void setLambda(double);
-    double getLambda();
+    void set_lambda(double);
+    double get_lambda();
 
-    void setGama(double);
-    double getGama();
+    void set_gama(double);
+    double get_gama();
 
-    void setTau(double);
-    double getTau();
+    void set_tau(double);
+    double get_tau();
 
-    void setRwPosition(std::list<RandomWalk*>::iterator);
-    std::list<RandomWalk*>::iterator getRwPosition();
+    void set_rw_position(std::list<RandomWalk*>::iterator);
+    std::list<RandomWalk*>::iterator get_rw_position();
 
-    bool isInfected();
+    bool is_infected();
 
-    std::string stateToString();
+    std::string state_to_string();
     void insertTimeInfected(double _t);
     void insertTimeContracted(double _t);
     void insertTimeWalking(double _t);

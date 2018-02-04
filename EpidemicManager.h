@@ -32,8 +32,16 @@
 #include <chrono>
 #include <mutex>
 #include "json.hpp"
+#include "Logger.h"
 
 using namespace std;
+
+struct TimeStatistics{
+    double std;
+    double mean;
+    double min;
+    double max;
+};
 
 
 class EpidemicManager{
@@ -66,14 +74,14 @@ private:
     /// \param run Represents id of run
     void run_simulation_in_thread(Params params, std::string paramsStr, ManipulaGrafoV graph, int run);
     
-    double std_desviation(double mean);
+    TimeStatistics time_epidemic_statistics(double mean);
     
     /// duration of all runs
     int aggregate_time_ms;
     double epidemic_time;
     double avg_epidemic_time;
     double std_epidemic_time;
-    std::vector<double> means;
+    std::vector<std::tuple<int,double>> means;
     std::vector<double> means_dur_execution;
     int do_analysis;
     std::string output_dir;
