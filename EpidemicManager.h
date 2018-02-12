@@ -54,11 +54,15 @@ public:
     /// Starts Simulation
     /// \param params parameters for simulation
     /// \param paramsStr parameters in string form to print
-    void start_simulation(Params params, std::string paramsStr);
+    void start_simulation(Params params, std::string paramsStr, bool do_parallel);
     
     void mean_time_epidemic_by_k(Params params, std::string strParams);
     void mean_time_epidemic_by_n(Params params, std::string strParams);
     void mean_time_epidemic_by_lambda(Params params, std::string strParams);
+    
+    void measure_scalability_by_random_walks(Params params, std::string strParams);
+    void measure_scalability_by_vertices(Params params, std::string strParams);
+    void measure_scalability_by_time(Params params, std::string strParams);
     
 private:
     

@@ -51,6 +51,8 @@ public:
                 if (i != j)
                     graph.incluirAresta(i + 1, j + 1, 1.0);
 
+        Logger::Trace("Clique Generated");
+            
         return graph;
     }
 

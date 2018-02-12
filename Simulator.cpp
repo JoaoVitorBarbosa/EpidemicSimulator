@@ -4,6 +4,7 @@
  */
 
 #include "Simulator.h"
+#include "Logger.h"
 
 #define GetCurrentDir getcwd
 
@@ -480,11 +481,10 @@ void Simulator::process() {
 //        if (evt.type != EventType::Walk)
 //            writeNumberRwStatePerTime(evt.toString());
         
-        // configure debug
         double percentual = time / limit_time_epidemic * 100;
 
-        //if ((int) percentual != (int) old_percentual)
-            //std::cout << std::fixed << percentual << "%" << std::endl;
+        if ((int) percentual != (int) old_percentual)
+            Logger::Trace(std::to_string(percentual) +  "%");
         
         old_percentual = percentual;
     }

@@ -43,6 +43,7 @@ void to_json(json& j, const Params& p) {
         {"Operation", p.Operation},
         {"p", p.p},
         {"KS", p.KS},
+        {"TimeS", p.TimeS},
         {"DebugLevel", p.DebugLevel},
         {"GraphParam",
             {
@@ -92,6 +93,7 @@ void from_json(const json& j, Params& p) {
     p.Vertex.p = j.at("VertexParam").at("p").get<double>();
     p.Vertex.vertexParamArray = j.at("VertexParam").at("vertexParamArray").get<std::string>();
     p.KS = j.at("KS").get<std::string>();
+    p.TimeS = j.at("TimeS").get<std::string>();
     p.Operation = j.at("Operation").get<std::string>();
     p.DebugLevel = j.at("DebugLevel").get<int>();
 }
@@ -220,6 +222,10 @@ int main(int argc, char** argv) {
         std::vector<int> KS = arKS;
         params.KS_vector = KS;
         
+        json arTimeS = json::parse(params.TimeS);
+        std::vector<int> TimeS = arTimeS;
+        params.Time_vector = TimeS;
+        
         json arNS = json::parse(params.Graph.NS);
         std::vector<int> NS = arNS;
         params.Graph.NS_vector = NS;
@@ -246,6 +252,8 @@ int main(int argc, char** argv) {
             params.Runs = atoi(argv[6]);
                            
         std::string op = "sim";
+        op = params.Operation;
+        
         if(argc > 7)
             op = argv[7];
         
@@ -266,15 +274,22 @@ int main(int argc, char** argv) {
         Logger::level = (LogLevel) params.DebugLevel;
         
         EpidemicManager manager(false);
+        std::string jsonDump = j.dump(4);
         
         if(op == "sim")
-            manager.start_simulation(params, j.dump(4));
+            manager.start_simulation(params, jsonDump, true);
         else if(op == "sim_by_k")
-            manager.mean_time_epidemic_by_k(params, j.dump(4));
+            manager.mean_time_epidemic_by_k(params, jsonDump);
         else if(op == "sim_by_n")
-            manager.mean_time_epidemic_by_n(params, j.dump(4));
+            manager.mean_time_epidemic_by_n(params, jsonDump);
         else if(op == "sim_by_lambda")
-            manager.mean_time_epidemic_by_lambda(params, j.dump(4));
+            manager.mean_time_epidemic_by_lambda(params, jsonDump);
+        else if(op == "scalability_k")
+            manager.measure_scalability_by_random_walks(params, jsonDump);
+        else if(op == "scalability_vertices")
+            manager.measure_scalability_by_vertices(params, jsonDump);
+        else if(op == "scalability_time")
+            manager.measure_scalability_by_time(params, jsonDump);
 
     } catch (exception& e) {
         std::string str = "Error while parsing parameter file: ";

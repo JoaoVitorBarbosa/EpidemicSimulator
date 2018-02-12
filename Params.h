@@ -71,7 +71,9 @@ struct Params {
     VertexParam Vertex;
     std::string OutputDir;
     std::string KS;
+    std::string TimeS;
     std::vector<int> KS_vector;
+    std::vector<int> Time_vector;
     std::string Operation;
 };
 

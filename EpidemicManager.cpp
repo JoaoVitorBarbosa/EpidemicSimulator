@@ -67,7 +67,7 @@ void EpidemicManager::mean_time_epidemic_by_k(Params params, std::string strPara
             avg_epidemic_time = params.Time;
             std_epidemic_time = 0.0012;
         } else {
-            start_simulation(params, strParams);
+            start_simulation(params, strParams, true);
         }
 
         k_mean_time.push_back(std::make_pair(params.KS_vector[i], avg_epidemic_time));
@@ -95,7 +95,7 @@ void EpidemicManager::mean_time_epidemic_by_n(Params params, std::string strPara
     std::string outputdir;
     for (int i = 0; i < params.Graph.NS_vector.size(); i++) {
         params.Graph.n = params.Graph.NS_vector[i];
-        start_simulation(params, strParams);
+        start_simulation(params, strParams, true);
         n_mean_time.push_back(std::make_pair(params.Graph.NS_vector[i], avg_epidemic_time));
         n_std_time.push_back(std::make_pair(params.Graph.NS_vector[i], std_epidemic_time));
 
@@ -141,7 +141,7 @@ void EpidemicManager::mean_time_epidemic_by_lambda(Params params, std::string st
             std_epidemic_time = 0.012;
         }
         else
-            start_simulation(params, strParams);
+            start_simulation(params, strParams, true);
         
         lambda_mean_time.push_back(std::make_pair(params.Rw.lambda_vector[i], avg_epidemic_time));
         lambda_std_time.push_back(std::make_pair(params.Rw.lambda_vector[i], std_epidemic_time));
@@ -158,12 +158,103 @@ void EpidemicManager::mean_time_epidemic_by_lambda(Params params, std::string st
     delete ep;
 }
 
-void EpidemicManager::start_simulation(Params params, std::string strParams) {
+void EpidemicManager::measure_scalability_by_random_walks(Params params, std::string strParams)
+{
+    Logger::Info("Scalability by random walks");
+    
+    std::vector<std::pair<double, double> > mean_time;
+    std::string fName = Utils::datetime_now_to_string();
+    params.OutputDir = params.OutputDir + "/" + fName + "_scalability_by_k_" + std::to_string(params.Time) + "_" + std::to_string(params.Graph.n) + "_" + std::to_string(params.Rw.k) + "_" + std::to_string(params.Rw.ki) + "_" + std::to_string(params.Rw.kiPer) + "_" + std::to_string(params.Rw.lambda) + "_" + std::to_string(params.Rw.gama) + "_" + std::to_string(params.Runs);
+    Utils::createDirectory(params.OutputDir);
+    std::string mean_time_file = params.OutputDir + "/scalability_by_k.txt";
+
+    std::ofstream arq;
+    
+    for(int i = 0; i < params.KS_vector.size(); i++)
+    {
+        params.Rw.k = params.KS_vector[i];
+        params.Rw.ki = params.Rw.kiPer * params.Rw.k < 1 ? 1 : params.Rw.kiPer * params.Rw.k;
+        
+        start_simulation(params, strParams, false);
+        
+        Logger::Info("Tempo de Epidemia: " + std::to_string(avg_epidemic_time));
+        
+        double m_duration = (aggregate_time_ms / params.Runs)/1000.;
+        mean_time.push_back(std::make_pair(params.Rw.k, m_duration));
+        
+        arq.open(mean_time_file, std::ofstream::app);
+        arq << params.Rw.k << ";" << Utils::replace_dot_to_comma(m_duration) << "\n";
+        arq.close();
+    }
+}
+    
+void EpidemicManager::measure_scalability_by_vertices(Params params, std::string strParams)
+{
+    Logger::Info("Scalability by vertices");
+    
+    std::vector<std::pair<double, double> > mean_time;
+    std::string fName = Utils::datetime_now_to_string();
+    params.OutputDir = params.OutputDir + "/" + fName + "_scalability_by_vertices_" + std::to_string(params.Time) + "_" + std::to_string(params.Graph.n) + "_" + std::to_string(params.Rw.k) + "_" + std::to_string(params.Rw.ki) + "_" + std::to_string(params.Rw.kiPer) + "_" + std::to_string(params.Rw.lambda) + "_" + std::to_string(params.Rw.gama) + "_" + std::to_string(params.Runs);
+    Utils::createDirectory(params.OutputDir);
+    std::string mean_time_file = params.OutputDir + "/scalability_by_vertices.txt";
+
+    std::ofstream arq;
+    
+    for(int i = 0; i < params.Graph.NS_vector.size(); i++)
+    {
+        params.Graph.n = params.Graph.NS_vector[i];
+        params.Rw.ki = params.Rw.kiPer * params.Rw.k < 1 ? 1 : params.Rw.kiPer * params.Rw.k;
+        
+        start_simulation(params, strParams, false);
+        
+        Logger::Info("Tempo de Epidemia: " + std::to_string(avg_epidemic_time));
+        
+        double m_duration = (aggregate_time_ms / params.Runs)/1000.;
+        mean_time.push_back(std::make_pair(params.Graph.n, m_duration));
+        
+        arq.open(mean_time_file, std::ofstream::app);
+        arq << params.Graph.n << ";" << Utils::replace_dot_to_comma(m_duration) << ";" << Utils::replace_dot_to_comma(avg_epidemic_time) << "\n";
+        arq.close();
+    }
+}
+    
+void EpidemicManager::measure_scalability_by_time(Params params, std::string strParams)
+{
+    Logger::Info("Scalability by time");
+    
+    std::vector<std::pair<double, double> > mean_time;
+    std::string fName = Utils::datetime_now_to_string();
+    params.OutputDir = params.OutputDir + "/" + fName + "_scalability_by_time_" + std::to_string(params.Time) + "_" + std::to_string(params.Graph.n) + "_" + std::to_string(params.Rw.k) + "_" + std::to_string(params.Rw.ki) + "_" + std::to_string(params.Rw.kiPer) + "_" + std::to_string(params.Rw.lambda) + "_" + std::to_string(params.Rw.gama) + "_" + std::to_string(params.Runs);
+    Utils::createDirectory(params.OutputDir);
+    std::string mean_time_file = params.OutputDir + "/scalability_by_time.txt";
+
+    std::ofstream arq;
+    
+    for(int i = 0; i < params.Time_vector.size(); i++)
+    {
+        params.Time = params.Time_vector[i];
+        params.Rw.ki = params.Rw.kiPer * params.Rw.k < 1 ? 1 : params.Rw.kiPer * params.Rw.k;
+        
+        start_simulation(params, strParams, false);
+        
+        Logger::Info("Tempo de Epidemia: " + std::to_string(avg_epidemic_time));
+        
+        double m_duration = (aggregate_time_ms / params.Runs)/1000.;
+        mean_time.push_back(std::make_pair(params.Time, m_duration));
+        
+        arq.open(mean_time_file, std::ofstream::app);
+        arq << params.Time << ";" << Utils::replace_dot_to_comma(m_duration) << ";" << Utils::replace_dot_to_comma(avg_epidemic_time) << "\n";
+        arq.close();
+    }
+}
+
+void EpidemicManager::start_simulation(Params params, std::string strParams, bool do_parallel) {
     Logger::Info("Running epidemic.\nParameters:\n   graph: " 
             + std::to_string(params.Graph.Type) 
+            + "\n   Time: " + std::to_string(params.Time)
             + "\n   n: " + std::to_string(params.Graph.n)
             + "\n   k: " + std::to_string(params.Rw.k)
-            + "\n   ki: " + std::to_string(params.Rw.kiPer)
+            + "\n   ki: " + std::to_string(params.Rw.ki)
             + "\n   lambda: " + std::to_string(params.Rw.lambda)
             + "\n   gama: " + std::to_string(params.Rw.gama)
             + "\n   runs: " + std::to_string(params.Runs));
@@ -174,13 +265,14 @@ void EpidemicManager::start_simulation(Params params, std::string strParams) {
 
     ManipulaGrafoV graph = create_graph(params);
 
-    std::string fName = Utils::datetime_now_to_string();
-
+    std::string fName = "";//Utils::datetime_now_to_string();
     params.OutputDir = params.OutputDir + "/" + fName + "_" + std::to_string(params.Time) + "_" + std::to_string(params.Graph.n) + "_" + std::to_string(params.Rw.k) + params.OutputDir = params.OutputDir + "/" + fName + "_" + std::to_string(params.Time) + "_" + std::to_string(params.Graph.n) + "_" + std::to_string(params.Rw.k) + "_" + std::to_string(params.Rw.kiPer) + "_" + std::to_string(params.Rw.lambda) + "_" + std::to_string(params.Runs);
     +"_" + std::to_string(params.Runs);
     output_dir = params.OutputDir;
     Utils::createDirectory(params.OutputDir);
 
+    Logger::Trace("Output Directory created: " + output_dir);
+    
     std::ofstream arq;
     std::string paramsFile = params.OutputDir + "/Params_Execution.json";
 
@@ -188,13 +280,19 @@ void EpidemicManager::start_simulation(Params params, std::string strParams) {
     arq << strParams << "\n";
     arq.close();
 
-    int num_threads = params.Runs;
-
-    //std::thread * threads = new std::thread[num_threads];
-
+    if(do_parallel){
+        Logger::Trace("Starting Simulation parallel");
 #pragma omp parallel for
-    for (int i = 0; i < params.Runs; i++) {
-        run_simulation_in_thread(params, strParams, graph, i);
+        for (int i = 0; i < params.Runs; i++) {
+            run_simulation_in_thread(params, strParams, graph, i);
+        }
+    }
+    else
+    {
+        Logger::Trace("Starting Simulation serial");
+        for (int i = 0; i < params.Runs; i++) {
+            run_simulation_in_thread(params, strParams, graph, i);
+        }
     }
 
     avg_epidemic_time = epidemic_time / (double) params.Runs;
