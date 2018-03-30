@@ -39,6 +39,7 @@ class Simulator {
     int num_Inf_Events;
     int limit_time_epidemic;
     int rounds;
+    bool continue_simulation_after_epidemic;
     double time_of_last_number_of_infected;
     /// Stores Time interval that system had k infected
     std::map<int, double> infected_intervals;
@@ -73,8 +74,14 @@ class Simulator {
     std::string eventToString(EventType evt);
     void writeNumberRwStatePerTime(std::string evt);
 
+    std::list<std::pair<double, double> > infected_density_over_time;
+    // store pairs of (time, # infected). It's used to create graph of infected in function of time (and for average over runs)
+    std::string file_infected_density;
+    void write_infected_density();
+    
 public:
     double time;
+    std::list<std::pair<double, int> > infected_time;
     // Number of infected Random Walks
     int k;
     int infectionTimes;
@@ -88,7 +95,8 @@ public:
     std::priority_queue<Event> events;
     std::vector<Vertex*> vertices;
     ManipulaGrafoV graph;
-
+    bool do_analysis;
+    
     Simulator(int _k, int _timeLim, int _round, std::string _graph);
     Simulator(Params params, std::string jsonStr, ManipulaGrafoV graph);
     ~Simulator();

@@ -39,6 +39,7 @@ void to_json(json& j, const Params& p) {
     j = json{
         {"Runs", p.Runs},
         {"Time", p.Time},
+        {"cont_simulation", p.cont_simulation},
         {"OutputDir", p.OutputDir},
         {"Operation", p.Operation},
         {"p", p.p},
@@ -75,6 +76,7 @@ void to_json(json& j, const Params& p) {
 void from_json(const json& j, Params& p) {
     p.Runs = j.at("Runs").get<int>();
     p.Time = j.at("Time").get<int>();
+    p.cont_simulation = j.at("cont_simulation").get<std::string>() == "true";
     p.p = j.at("p").get<double>();
     p.OutputDir = j.at("OutputDir").get<std::string>();
     p.Graph.Type = j.at("GraphParam").at("Type").get<int>();
@@ -200,7 +202,7 @@ int main(int argc, char** argv) {
         //argv[1] = "/home/joao/Mestrado/Simulador/Source\ Code/Epidemic_Simulator/data/Params.json";
 
         string paramsPath = argv[1];
-        std::cout << "Parsing file " << paramsPath << std::endl;
+        Logger::Info("Parsing file " + paramsPath);
         json j;
         std::ifstream i(paramsPath);
         i >> j;
@@ -273,7 +275,7 @@ int main(int argc, char** argv) {
         
         Logger::level = (LogLevel) params.DebugLevel;
         
-        EpidemicManager manager(false);
+        EpidemicManager manager(true);
         std::string jsonDump = j.dump(4);
         
         if(op == "sim")

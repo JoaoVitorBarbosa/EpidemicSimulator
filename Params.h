@@ -66,6 +66,7 @@ struct Params {
     int Runs;
     double p;
     int DebugLevel;
+    bool cont_simulation;
     GraphParam Graph;
     RwParam Rw;
     VertexParam Vertex;

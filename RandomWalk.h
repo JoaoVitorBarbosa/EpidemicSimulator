@@ -65,7 +65,7 @@ struct History {
 
 class RandomWalk {
 public:
-
+    bool do_analysis;
     // vetex where rw is located
     int vertex;
     // code of rw

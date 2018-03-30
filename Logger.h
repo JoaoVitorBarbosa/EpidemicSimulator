@@ -67,7 +67,7 @@ public:
     }
 
     static void Info(std::string str) {
-        if (level != LogLevel::Warn || level != LogLevel::Error)
+        if (level != LogLevel::Warn && level != LogLevel::Error)
             Write(LogLevel::Info, str);
     }
 

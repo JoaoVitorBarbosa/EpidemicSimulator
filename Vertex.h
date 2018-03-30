@@ -13,7 +13,7 @@
 #ifndef VERTEX_H
 #define VERTEX_H
 
-#include<list>
+#include <list>
 #include "RandomWalk.h"
 #include <map>
 
@@ -47,6 +47,7 @@ public:
     
     // directory to save all vertex data
     std::string outputDir;
+    bool do_analysis;
     
     Vertex();
     Vertex(int rwinf_0, double p, int code, int _kMax, std::string _dirToSave);

@@ -11,6 +11,7 @@ Vertex::Vertex() {
 }
 
 Vertex::Vertex(int _rwInf, double _p, int _code, int _kMax, std::string _dirToSave) : rwInfecteds(_rwInf), p(_p), code(_code), kMax(_kMax), dirToSave(_dirToSave) {
+    do_analysis = true;
     fileNameTimeResult = dirToSave + "/" + std::to_string(code) + "_vertex_results.txt";
     totalTimeWithInfc = 0.0;
     timeLastNumberinfect = 0.0;
@@ -58,8 +59,7 @@ void Vertex::increaseRwInfecteds(double time) {
 
     // don't count time with k = 0
     // if size == 1, so it was 0 before
-    if (randomWalks.size() > 1)
-    {
+    if (randomWalks.size() > 1) {
         timeNumberInfect[rwInfecteds] = interval + actInterval;
         totalTimeWithInfc += interval;
     }
@@ -69,22 +69,24 @@ void Vertex::increaseRwInfecteds(double time) {
 }
 
 void Vertex::writeTimeInfected(double time) {
-//    std::ofstream arq;
-//    arq.open(fileNameTimeResult, std::ofstream::out | std::ofstream::app);
-//
-//    //for(std::map<int, double>::iterator it = timeNumberInfect.begin(); it != timeNumberInfect.end(); it++) 
-////        arq << it->first  << "," << it->second / totalTimeWithInfc << std::endl;
-//    
-//    arq << "Total encounters type 2: " << total_encounters << std::endl;
-//    arq << "Total encounters type 2 with transmission: " << total_encounters_with_transmission << std::endl;
-//    arq << "Empiric p type 2: " << total_encounters_with_transmission/(double) total_encounters << std::endl;
-//    arq << "Empiric p type 1: " << get_empiric_p_type_1() << std::endl;
-//    arq << "\n";
-//    
-//    for (int i = 0; i <= kMax; i++)
-//        arq << i  << "," << timeNumberInfect[i] / totalTimeWithInfc << std::endl;
-//
-//    arq.close();
+    if (do_analysis) {
+        std::ofstream arq;
+        arq.open(fileNameTimeResult, std::ofstream::out | std::ofstream::app);
+
+        for (std::map<int, double>::iterator it = timeNumberInfect.begin(); it != timeNumberInfect.end(); it++)
+            arq << it->first << "," << it->second / totalTimeWithInfc << std::endl;
+
+        arq << "Total encounters type 2: " << total_encounters << std::endl;
+        arq << "Total encounters type 2 with transmission: " << total_encounters_with_transmission << std::endl;
+        arq << "Empiric p type 2: " << total_encounters_with_transmission / (double) total_encounters << std::endl;
+        arq << "Empiric p type 1: " << get_empiric_p_type_1() << std::endl;
+        arq << "\n";
+
+        for (int i = 0; i <= kMax; i++)
+            arq << i << "," << timeNumberInfect[i] / totalTimeWithInfc << std::endl;
+
+        arq.close();
+    }
 }
 
 std::list<RandomWalk*>::iterator Vertex::setRandomWalk(RandomWalk* rw) {
@@ -103,27 +105,22 @@ void Vertex::eraseRandomWalk(std::list<RandomWalk*>::iterator it) {
     }
 }
 
-void Vertex::increase_encounters_by(int n)
-{
+void Vertex::increase_encounters_by(int n) {
     this->total_encounters += n;
 }
 
-void Vertex::increase_encounters_with_transmition_by(int n)
-{
+void Vertex::increase_encounters_with_transmition_by(int n) {
     this->total_encounters_with_transmission += n;
 }
 
-void Vertex::sum_fail_encounters(int k)
-{
+void Vertex::sum_fail_encounters(int k) {
     sum_fail_k += k;
 }
-    
-void Vertex::sum_success_encounters(int k)
-{
+
+void Vertex::sum_success_encounters(int k) {
     sum_success_k += k;
 }
 
-double Vertex::get_empiric_p_type_1()
-{
+double Vertex::get_empiric_p_type_1() {
     return sum_fail_k / (double) (sum_success_k - sum_fail_k);
 }

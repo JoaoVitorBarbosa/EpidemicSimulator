@@ -10,6 +10,7 @@ RandomWalk::RandomWalk() {
 }
 
 RandomWalk::RandomWalk(int _vertex, double _lambda, double _gama, double _tau, State _state, int _code, std::string _outputDir) {
+    do_analysis = true;
     vertex = _vertex;
     lambda = _lambda;
     gama = _gama;
@@ -24,26 +25,25 @@ RandomWalk::RandomWalk(int _vertex, double _lambda, double _gama, double _tau, S
     file_name_walking_times = output_dir + "/" + prefix + "_walkingTimes.txt";
 
     // commented
-//    
-//    std::ofstream arq;
-//
-//    arq.open(file_name_history);
-//    arq << "# Random Walk: " << code << std::endl;
-//    arq << "# Parameters: Lambda: " << lambda << ", Gama: " << gama << ", Tau: " << tau << '\n';
-//    arq << "# time,event,vertex,state,effect,infected_by" << '\n';
-//
-//    arq.close();
-//
-//    arq.open(file_name_sample_results);
-//    arq << "# Parameters: Lambda: " << lambda << ", Gama: " << gama << ", Tau: " << tau << '\n';
-//    arq << "# time,state_changed" << '\n';
-//    arq.close();
-//    
-//    arq.open(file_name_walking_times);
-//    arq << "# Walking Times" << std::endl;
-//    arq.close();
+    if (do_analysis) {
+        std::ofstream arq;
 
+        arq.open(file_name_history);
+        arq << "# Random Walk: " << code << std::endl;
+        arq << "# Parameters: Lambda: " << lambda << ", Gama: " << gama << ", Tau: " << tau << '\n';
+        arq << "# time,event,vertex,state,effect,infected_by" << '\n';
 
+        arq.close();
+
+        arq.open(file_name_sample_results);
+        arq << "# Parameters: Lambda: " << lambda << ", Gama: " << gama << ", Tau: " << tau << '\n';
+        arq << "# time,state_changed" << '\n';
+        arq.close();
+
+        arq.open(file_name_walking_times);
+        arq << "# Walking Times" << std::endl;
+        arq.close();
+    }
 }
 
 void RandomWalk::set_vertex(int v) {
@@ -119,25 +119,26 @@ std::string RandomWalk::state_to_string() {
 
 void RandomWalk::writeEvent(History history) {
     // commented
-//    
-//    std::cout << "RW: " << code << " ; Vertex: " << vertex << " ; Time: " << time << " ; Event: " << history.event << " ; State: " << state_to_string() << std::endl;
-//    writeFile(history); 
+    if (do_analysis) {
+        //std::cout << "RW: " << code << " ; Vertex: " << vertex << " ; Time: " << time << " ; Event: " << history.event << " ; State: " << state_to_string() << std::endl;
+        writeFile(history);
+    }
 }
 
 void RandomWalk::writeFile(History history) {
     // commented
-//    
-//    std::ofstream arq;
-//    arq.open(file_name_history, std::ofstream::out | std::ofstream::app);
-//    arq << std::fixed << history.time << "," << history.event << "," << history.vertex << "," << history.state << "," << history.effect << "," << history.get_num_rw_infected() << '\n';
-//    arq.close();
-//    
-//    if(history.event == "Walk")
-//    {
-//        arq.open(file_name_walking_times, std::ofstream::out | std::ofstream::app);
-//        arq << std::fixed << history.time << std::endl;
-//        arq.close();
-//    }
+    if (do_analysis) {
+        std::ofstream arq;
+        arq.open(file_name_history, std::ofstream::out | std::ofstream::app);
+        arq << std::fixed << history.time << "," << history.event << "," << history.vertex << "," << history.state << "," << history.effect << "," << history.get_num_rw_infected() << '\n';
+        arq.close();
+
+        if (history.event == "Walk") {
+            arq.open(file_name_walking_times, std::ofstream::out | std::ofstream::app);
+            arq << std::fixed << history.time << std::endl;
+            arq.close();
+        }
+    }
 }
 
 void RandomWalk::insertTimeWalking(double _t) {
@@ -154,37 +155,40 @@ void RandomWalk::insertTimeContracted(double _t) {
 
 void RandomWalk::WriteResults() {
     // commented
-    
-//    std::ofstream arq;
-//
-//    arq.open(file_name_sample_results, std::ofstream::out | std::ofstream::app);
-//
-//    arq << std::fixed << "# Dados Infectado - Média: " << boost::accumulators::mean(intervalsInfected)
-//            << " Mediana: " << boost::accumulators::median(intervalsInfected) 
-//            << " Desvio Padrão: " << std::sqrt(boost::accumulators::variance(intervalsInfected)) << '\n';
-//    
-//    arq << std::fixed << "# Dados Contraído - Média: " << boost::accumulators::mean(intervalsContracted) 
-//            << " Mediana: " << boost::accumulators::median(intervalsContracted) 
-//            << " Desvio Padrão: " << std::sqrt(boost::accumulators::variance(intervalsContracted)) << '\n';
-//    
-//    arq << std::fixed << "# Dados Caminhar - Média: " << boost::accumulators::mean(intervalsWalking) 
-//            << " Mediana: " << boost::accumulators::median(intervalsWalking) 
-//            << " Desvio Padrão: " << std::sqrt(boost::accumulators::variance(intervalsWalking)) << '\n';
-//
-//    arq.close();
+
+    if (do_analysis) {
+        std::ofstream arq;
+        arq.open(file_name_sample_results, std::ofstream::out | std::ofstream::app);
+
+        arq << std::fixed << "# Dados Infectado - Média: " << boost::accumulators::mean(intervalsInfected)
+                << " Mediana: " << boost::accumulators::median(intervalsInfected)
+                << " Desvio Padrão: " << std::sqrt(boost::accumulators::variance(intervalsInfected)) << '\n';
+
+        arq << std::fixed << "# Dados Contraído - Média: " << boost::accumulators::mean(intervalsContracted)
+                << " Mediana: " << boost::accumulators::median(intervalsContracted)
+                << " Desvio Padrão: " << std::sqrt(boost::accumulators::variance(intervalsContracted)) << '\n';
+
+        arq << std::fixed << "# Dados Caminhar - Média: " << boost::accumulators::mean(intervalsWalking)
+                << " Mediana: " << boost::accumulators::median(intervalsWalking)
+                << " Desvio Padrão: " << std::sqrt(boost::accumulators::variance(intervalsWalking)) << '\n';
+
+        arq.close();
+    }
 }
 
 void RandomWalk::setTimeStateChange(double _t, int _s) {
     // commented
-    
-//    state_timestamps.push_back(std::make_pair(_t, _s));
-//
-//    std::ofstream arq;
-//    arq.open(file_name_sample_results, std::ofstream::out | std::ofstream::app);
-//
-//    arq << std::fixed << _t << "," << _s << '\n';
-//
-//    arq.close();
+
+    if (do_analysis) {
+        state_timestamps.push_back(std::make_pair(_t, _s));
+
+        std::ofstream arq;
+        arq.open(file_name_sample_results, std::ofstream::out | std::ofstream::app);
+
+        arq << std::fixed << _t << "," << _s << '\n';
+
+        arq.close();
+    }
 }
 
 void RandomWalk::drawStates() {

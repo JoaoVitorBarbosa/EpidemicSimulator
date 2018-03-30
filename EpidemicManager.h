@@ -89,6 +89,7 @@ private:
     std::vector<double> means_dur_execution;
     int do_analysis;
     std::string output_dir;
+    TimeStatistics duration_standard_desviation(std::vector<double> times, double mean);
     
     
     boost::accumulators::accumulator_set<double, boost::accumulators::features<boost::accumulators::tag::mean, boost::accumulators::tag::variance>> time_epidemic_acc;

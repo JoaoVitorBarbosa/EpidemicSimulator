@@ -99,6 +99,11 @@ public:
     /// \lambda parameter of exponential for validation
     void RandomWalkWalkingCCDF(std::string filepath, std::string randomWalk, double _lambda);
     
+    /// Creates graphic with avg number of infected over time.
+    /// \param runs
+    /// \param file_name
+    void infected_in_time_in_runs(int runs, std::string output);
+    
     void mean_time_of_epidemic_over_k(std::vector<std::pair<double, double> > k_mean_time, int n);
     void std_time_of_epidemic_over_k(std::vector<std::pair<double, double> > k_std_time, int n);
     

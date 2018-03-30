@@ -9,12 +9,12 @@
             <url>EpidemicAnalysis.cpp</url>
             <bookmark id="7">
                 <name/>
-                <line>116</line>
+                <line>125</line>
                 <key/>
             </bookmark>
             <bookmark id="8">
                 <name/>
-                <line>278</line>
+                <line>298</line>
                 <key/>
             </bookmark>
         </file>
@@ -22,21 +22,18 @@
             <url>Simulator.cpp</url>
             <bookmark id="2">
                 <name/>
-                <line>354</line>
+                <line>365</line>
                 <key/>
             </bookmark>
         </file>
     </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/joao/Mestrado/Simulador/Source%20Code/Epidemic_Simulator/EpidemicManager.h</file>
+            <file>file:/home/joao/Mestrado/Simulador/Source%20Code/Epidemic_Simulator/EpidemicAnalysis.cpp</file>
             <file>file:/home/joao/Mestrado/Simulador/Source%20Code/Epidemic_Simulator/Simulator.cpp</file>
-            <file>file:/home/joao/Mestrado/Simulador/Source%20Code/Epidemic_Simulator/GraphGenerator.h</file>
             <file>file:/home/joao/Mestrado/Simulador/Source%20Code/Epidemic_Simulator/EpidemicManager.cpp</file>
-            <file>file:/home/joao/Mestrado/Simulador/Source%20Code/Epidemic_Simulator/main.cpp</file>
-            <file>file:/home/joao/Mestrado/Simulador/Source%20Code/Epidemic_Simulator/Params.h</file>
-            <file>file:/home/joao/Mestrado/Simulador/Source%20Code/Epidemic_Simulator/Logger.h</file>
-            <file>file:/home/joao/Mestrado/Simulador/Source%20Code/Epidemic_Simulator/data/Params.json</file>
+            <file>file:/home/joao/Mestrado/Simulador/Source%20Code/Epidemic_Simulator/Vertex.cpp</file>
+            <file>file:/home/joao/Mestrado/Simulador/Source%20Code/Epidemic_Simulator/EpidemicAnalysis.h</file>
         </group>
     </open-files>
 </project-private>

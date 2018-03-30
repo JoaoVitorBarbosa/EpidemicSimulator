@@ -10,7 +10,7 @@
 
 EpidemicAnalysis::EpidemicAnalysis(std::string _outputDir) {
     outputDir = _outputDir;
-    do_validation = false;
+    do_validation = true;
 }
 
 /*
@@ -75,57 +75,67 @@ void EpidemicAnalysis::createStateStatisticsAndCCDF(std::vector<std::pair<double
     std::vector<std::pair<double, double> > contractedsPts = getCCDFPoints(contracteds_segments);
     std::vector<std::pair<double, double> > infectedsPts = getCCDFPoints(infecteds_segments);
 
-    std::string prefix("RW" + rw);
-    std::string filename = this->outputDir + "/" + prefix + "_CCDFState.png";
+    std::string prefix(rw + "_");
+    std::string filename = this->outputDir + "/" + prefix + "_CCDFEstadoEpidemico.png";
 
     // print all ccdf in one graphic
     Gnuplot gp;
 
     if (do_validation) {
-        gp << "set title 'CCDF tempo gasto no estado infectado' \n";
-        gp << "set xlabel 'Tempo' \n";
-        gp << "set ylabel 'Fração' \n";
+        //gp << "set title 'CCDF tempo gasto no estado infectado' \n";
+        gp << "set encoding utf8 \n";
+        gp << "set xlabel 'Intervalo de tempo no estado Infectado' font 'Helvetica,16' \n";
+        gp << "set ylabel 'P[t>=T]' font 'Helvetica,16' \n";
         gp << "set term png \n";
-        gp << "set output '" + this->outputDir + "/" + prefix + "_CCDFInfected" + "' \n";
+        gp << "set output '" + this->outputDir + "/" + prefix + "CCDFInfectado.png" + "' \n";
+        gp << "set grid \n";
         gp << "set logscale y \n";
-        gp << "plot" << gp.file1d(infectedsPts) << "title 'Infectado' with lines lt rgb '#00FF00', exp(-" + std::to_string(gama) + "*x) title 'Statistics' with lines lt rgb '#FF0000' \n";
+        gp << "plot" << gp.file1d(infectedsPts) << "title 'Empírico' with lines lt rgb '#00FF00', exp(-" + std::to_string(gama) + "*x) title 'Estatístico' with lines lt rgb '#FF0000' \n";
 
-        gp << "set title 'CCDF tempo gasto no estado contraido' \n";
-        gp << "set xlabel 'Tempo' \n";
-        gp << "set ylabel 'Fração' \n";
+        //gp << "set title 'CCDF tempo gasto no estado contraido' \n";
+        gp << "set encoding utf8 \n";
+        gp << "set xlabel 'Intervalo de tempo no estado contraído' font 'Helvetica,16' \n";
+        gp << "set ylabel 'P[t>=T]' font 'Helvetica,16' \n";
         gp << "set term png \n";
-        gp << "set output '" + this->outputDir + "/" + prefix + "_CCDFContracted" + "' \n";
+        gp << "set output '" + this->outputDir + "/" + prefix + "_CCDFContraido.png" + "' \n";
+        gp << "set grid \n";
         gp << "set logscale y \n";
-        gp << "plot" << gp.file1d(contractedsPts) << "title 'Contraido' with lines lt rgb '#00FF00', exp(-" + std::to_string(tau) + "*x) title 'Statistics' with lines lt rgb '#FF0000' \n";
-    } else {
-        gp << "set title 'CCDF tempo gasto no estado \n";
-        gp << "set xlabel 'Tempo gasto no estado' \n";
-        gp << "set ylabel 'Fração' \n";
+        gp << "plot" << gp.file1d(contractedsPts) << "title 'Empírico' with lines lt rgb '#00FF00', exp(-" + std::to_string(tau) + "*x) title 'Estatístico' with lines lt rgb '#FF0000' \n";
+
+        //gp << "set title 'CCDF tempo gasto no estado \n";
+        gp << "set encoding utf8 \n";
+        gp << "set xlabel 'Intervalo de tempo no estado epidêmico' font 'Helvetica,16' \n";
+        gp << "set ylabel 'P[t>=T]' font 'Helvetica,16' \n";
         gp << "set term png \n";
         gp << "set output '" + filename + "' \n";
+        gp << "set grid \n";
         gp << "set logscale y \n";
-        gp << "plot" << gp.file1d(susceptiblesPts) << "title 'Susceptible' with lines lt rgb '#00FF00', "
-                << gp.file1d(contractedsPts) << "title 'Contracted' with lines lt rgb '#0000FF', "
-                << gp.file1d(infectedsPts) << "title 'Infected' with lines lt rgb '#FF0000' \n";
+        gp << "plot" << gp.file1d(susceptiblesPts) << "title 'Suscetível' with lines lt rgb '#00FF00', "
+                << gp.file1d(contractedsPts) << "title 'Contraído' with lines lt rgb '#0000FF', "
+                << gp.file1d(infectedsPts) << "title 'Infectado' with lines lt rgb '#FF0000' \n";
     }
 
     std::ofstream arq;
     arq.open(this->outputDir + "/" + prefix + "_Results.txt", std::ofstream::out | std::ofstream::app);
 
     double infected_mean = boost::accumulators::mean(intervalsInfected);
+    double sum = 0;
+    for(int i = 0; i < infectedsPts.size(); i++)
+        sum += infectedsPts[i].second;
 
     arq << "Estado Infectado \n"
-            << "    Média teórica:          " << 1 / gama << "    Média estatística: " << infected_mean << "\n"
-            << "    Desvio Padrão teórico:  " << 1 / gama << "    Desvio padrão estatístico: " << std::sqrt(boost::accumulators::variance(intervalsInfected)) << "\n"
-            << "    Mediana teórica:        " << std::log(2) / gama << "    Mediana estatística: " << get_median(infecteds_segments).median << "\n"
-            << "    Gama teórico:           " << gama << "    Gama estatístico: " << 1 / infected_mean << "\n"
+            << "    Média teórica:          " << 1 / gama << "    Média empírica: " << infected_mean << "\n"
+            << "    Desvio Padrão teórico:  " << 1 / gama << "    Desvio padrão empírico: " << std::sqrt(boost::accumulators::variance(intervalsInfected)) << "\n"
+            << "    Mediana teórica:        " << std::log(2) / gama << "    Mediana empírica: " << get_median(infecteds_segments).median << "\n"
+            << "    Gama teórico:           " << gama << "    Gama empírico: " << 1 / infected_mean << "\n"
+            << "    Gama teórico:           " << gama << "    Gama empírico-2: " << infectedsPts.size() / sum << "\n"
             << '\n';
 
     arq << "Estado Contraído \n"
-            << "    Média teórica:          " << 1 / tau << "    Média estatística: " << boost::accumulators::mean(intervalsContracted) << "\n"
-            << "    Desvio Padrão teórico:  " << 1 / tau << "    Desvio padrão estatístico: " << std::sqrt(boost::accumulators::variance(intervalsContracted)) << "\n"
-            << "    Mediana teórica:        " << std::log(2) / tau << "    Mediana estatística: " << get_median(contracteds_segments).median << "\n"
-            << "    Tau teórico:           " << tau << "    Tau estatístico: " << 1 / boost::accumulators::mean(intervalsContracted) << "\n"
+            << "    Média teórica:          " << 1 / tau << "    Média empírica: " << boost::accumulators::mean(intervalsContracted) << "\n"
+            << "    Desvio Padrão teórico:  " << 1 / tau << "    Desvio padrão empírico: " << std::sqrt(boost::accumulators::variance(intervalsContracted)) << "\n"
+            << "    Mediana teórica:        " << std::log(2) / tau << "    Mediana empírica: " << get_median(contracteds_segments).median << "\n"
+            << "    Tau teórico:           " << tau << "    Tau empírico: " << 1 / boost::accumulators::mean(intervalsContracted) << "\n"
             << '\n';
 
     arq << "Estado Suscetível \n"
@@ -253,37 +263,41 @@ void EpidemicAnalysis::RandomWalkWalkingCCDF(std::string filepath, std::string r
 
     std::vector<std::pair<double, double> > walkingPts = getCCDFPoints(walking_segments);
 
-    std::string filename = this->outputDir + "/" + "RW" + randomWalk + "_CCDF_walk.png";
+    std::string filename = this->outputDir + "/" + randomWalk + "_CCDF_caminhar.png";
 
-    Gnuplot gp;
-
-    gp << "set title 'CCDF do tempo de caminhada\n";
-    gp << "set xlabel 'Tempo até próximo passo' \n";
-    gp << "set ylabel 'Fração' \n";
-    gp << "set term png \n";
-    gp << "set output '" + filename + "' \n";
-    gp << "set logscale y \n";
     if (do_validation) {
-        gp << "plot" << gp.file1d(walkingPts) << "title 'empiric' with lines lt rgb '#00FF00', exp(-" + std::to_string(lambda) + "*x) title 'statistics' with lines lt rgb '#FF0000' \n";
 
         // writing in file
-        std::string prefix("RW" + randomWalk);
-        std::string filename = this->outputDir + "/" + prefix + "_CCDFState.png";
-
-        std::ofstream arq;
-        arq.open(this->outputDir + "/" + prefix + "_Results.txt", std::ofstream::out | std::ofstream::app);
+        std::string prefix(randomWalk + "_");
 
         double emp_mean = boost::accumulators::mean(intervalsWalking);
         Stats stats = get_median(walking_segments);
+        
+        std::ofstream arq;
+        arq.open(this->outputDir + "/" + prefix + "_Results.txt", std::ofstream::out | std::ofstream::app);
 
         arq << "Dados do evento caminhar \n"
-                << "    Média teórica:          " << 1 / lambda << "    Média estatística: " << emp_mean << "   Outra média: " << stats.mean << "\n"
-                << "    Desvio Padrão teórico:  " << 1 / lambda << "    Desvio padrão estatístico: " << std::sqrt(boost::accumulators::variance(intervalsWalking)) << "\n"
-                << "    Mediana teórica:        " << std::log(2) / lambda << "    Mediana estatística: " << stats.median << "\n"
-                << "    Lambda teórico:           " << lambda << "    Gama estatístico: " << 1 / emp_mean << "\n"
+                << "    Média esperada:          " << 1 / lambda << "         Média empírico: " << emp_mean << "\n"
+                << "    Desvio Padrão esperado:  " << 1 / lambda << "         Desvio padrão empírico: " << std::sqrt(boost::accumulators::variance(intervalsWalking)) << "\n"
+                << "    Mediana teórica:        " << std::log(2) / lambda << "         Mediana empírico: " << stats.median << "\n"
+                << "    Lambda teórico:           " << lambda << "         Gama empírico: " << 1 / emp_mean << "\n"
                 << '\n';
-    } else
+
+        Gnuplot gp;
+
+        //gp << "set title 'CCDF do tempo de caminhada\n";
+        gp << "set encoding utf8 \n";
+        gp << "set xlabel 'Intervalo de tempo no vértice' font 'Helvetica,16' \n";
+        gp << "set ylabel 'P[t>=T]' font 'Helvetica,16' \n";
+        gp << "set term png \n";
+        gp << "set grid \n";
+        gp << "set output '" + filename + "' \n";
+        gp << "set logscale y \n";
+
+        gp << "plot" << gp.file1d(walkingPts) << "title 'Empírico' with lines lt rgb '#00FF00', exp(-" + std::to_string(lambda) + "*x) title 'Estatístico' with lines lt rgb '#FF0000' \n";
+
         gp << "plot" << gp.file1d(walkingPts) << "title 'empiric' with lines lt rgb '#00FF00 \n'";
+    }
 
 }
 
@@ -359,6 +373,121 @@ void EpidemicAnalysis::randomWalkStateTimeSeries(std::string arquivo) {
 
 }
 
+void EpidemicAnalysis::infected_in_time_in_runs(int runs, std::string output) {
+    std::string file_path = outputDir + "/infected_over_time.csv";
+    std::vector<std::pair<double, int> > infecteds_1;
+    std::vector<std::pair<double, int> > infecteds_avg;
+
+    for (int round = 0; round < runs; round++) {
+        std::string file_input = output + "/Round " + std::to_string(round) + "/system_results.txt";
+        std::vector<std::pair<double, int> > infecteds_aux;
+
+        // gets data
+        std::ifstream arq;
+        arq.open(file_input.c_str());
+
+        std::string linha = "";
+        int max = 0;
+        int count_to_avg = 1;
+        int sum_inf = 0;
+        while (!arq.eof()) {
+
+            std::string line;
+            std::getline(arq, line);
+
+            if (line.find('#') == 0)
+                continue;
+
+            std::stringstream lineStream(line);
+            std::string cell;
+
+            int i = 0;
+            double time;
+            int inf, sus, cont;
+
+            while (std::getline(lineStream, cell, ',')) {
+                if (i == 0)
+                    time = atof(cell.c_str());
+                if (i == 1) {
+                    inf = atof(cell.c_str());
+                    max = inf > max ? inf : max;
+                }
+                if (i == 2) {
+                    cont = atof(cell.c_str());
+                    max = cont > max ? cont : max;
+                }
+                if (i == 3) {
+                    sus = atof(cell.c_str());
+                    max = sus > max ? sus : max;
+                }
+                i++;
+            }
+
+            sum_inf += inf;
+            count_to_avg++;
+            int d = 50;
+            if (count_to_avg % d == 0) {
+                infecteds_aux.push_back(std::make_pair(time, sum_inf / (double) d));
+
+                int index = (count_to_avg / d) - 1;
+                if (infecteds_avg.size() < index + 1)
+                    infecteds_avg.push_back(std::make_pair(time, sum_inf / (double) d));
+                else {
+                    std::pair<double, int> aux = infecteds_avg[index];
+                    if (aux.first == 0.0)
+                        aux.first = time;
+                    infecteds_avg[index] = std::make_pair(aux.first, aux.second + sum_inf / (double) d);
+                }
+
+                sum_inf = 0;
+            }
+        }
+
+        if (infecteds_aux.size() > infecteds_1.size())
+            infecteds_1 = infecteds_aux;
+
+        arq.close();
+    }
+
+    for (int i = 0; i < infecteds_avg.size(); i++) {
+        std::pair<double, int> aux = infecteds_avg[i];
+        infecteds_avg[i] = std::make_pair(aux.first, aux.second / runs);
+    }
+
+    // remove ruido
+    // infecteds_avg.pop_back();
+
+
+    std::ofstream arq;
+    arq.open(file_path, std::ofstream::out | std::ofstream::app);
+    arq << "#time,uma rodada,media rodadas" << std::endl;
+
+    for (int i = 0; i < infecteds_avg.size(); i++) {
+        arq << infecteds_avg[i].first << ",      " << infecteds_1[i].second << ",      " << infecteds_avg[i].second << std::endl;
+    }
+
+    arq.close();
+
+    std::string filename = this->outputDir + "/infected_over_time_avg.png";
+    Gnuplot gp;
+    gp << "set encoding utf8 \n";
+    gp << "set title '' \n";
+    gp << "set xlabel 'Tempo' \n";
+    gp << "set ylabel 'I(t)' \n";
+    gp << "set grid \n";
+    gp << "set term png \n";
+    gp << "set output '" + filename + "' \n";
+    gp << "set terminal png medium size 1400,900 \n";
+    gp << "set yrange [0:" + std::to_string(60) + "]\n";
+    gp << "set xrange [0:100000]\n";
+    gp << "plot '-' title '1 rodada' with lines lt rgb '#0000FF', '-' title 'Media das rodadas' with lines lw 2 lt rgb '#FF0000' \n";
+    //gp << "plot '-' title 'avg' with lines lw 10 lt rgb '#00FF00' \n";
+
+    gp.send1d(infecteds_1);
+    gp.send1d(infecteds_avg);
+
+}
+
 void readTimeNumberInfect(std::string filename, std::set<double, int>) {
     std::ifstream arq;
     arq.open(filename.c_str());
@@ -405,13 +534,13 @@ void EpidemicAnalysis::stateDistribution(std::string filepathInfected, std::stri
 
     Gnuplot gp;
 
-    gp << "set title 'Fração do tempo do sistema com k infectados' \n";
-    gp << "set xlabel 'Numero de infectados' \n";
-    gp << "set ylabel 'Fração' \n";
+    gp << "set encoding utf8 \n";
+    gp << "set xlabel 'Número de indivíduos' font 'Helvetica,16'\n";
+    gp << "set ylabel 'Tempo(%)' font 'Helvetica,16'\n";
     gp << "set term png \n";
     gp << "set output '" + filename + "' \n";
-    //gp << "set logscale y \n";
-    gp << "plot '-' title 'Susceptible' with lines lt rgb '#00FF00', '-' title 'Contracted' with lines lt rgb '#0000FF', '-' title 'Infected' with lines lt rgb '#FF0000' \n";
+    gp << "set grid \n";
+    gp << "plot '-' title 'Suscetível' with lines lt rgb '#00FF00', '-' title 'Contraído' with lines lt rgb '#0000FF', '-' title 'Infectado' with lines lt rgb '#FF0000' \n";
 
     gp.send1d(timeStampSusceptibleChange);
     gp.send1d(timeStampContractedChange);
@@ -435,16 +564,15 @@ Stats EpidemicAnalysis::get_median(std::multiset<double> elems) {
 
     stats.mean = mean;
     stats.median = median;
-    
+
     return stats;
 }
 
-void EpidemicAnalysis::mean_time_of_epidemic_over_k(std::vector<std::pair<double, double> > k_mean_time, int n)
-{
+void EpidemicAnalysis::mean_time_of_epidemic_over_k(std::vector<std::pair<double, double> > k_mean_time, int n) {
     Gnuplot gp;
 
     std::string filename = this->outputDir + "/epidemic_mean_time_by_k.gif";
-    
+
     gp << "set title 'Tempo médio da epidemia com relação a k\n";
     gp << "set xlabel 'Número de passeios aleatórios' \n";
     gp << "set ylabel 'Tempo médio' \n";
@@ -453,15 +581,14 @@ void EpidemicAnalysis::mean_time_of_epidemic_over_k(std::vector<std::pair<double
     gp << "set output '" + filename + "' \n";
     gp << "set key bottom right title 'N=" + std::to_string(n) + "' \n";
     //gp << "set logscale y \n";
-    gp << "plot" << gp.file1d(k_mean_time) << "title 'media' with linespoints lt rgb '#FF0000' \n";   
+    gp << "plot" << gp.file1d(k_mean_time) << "title 'media' with linespoints lt rgb '#FF0000' \n";
 }
 
-void EpidemicAnalysis::std_time_of_epidemic_over_k(std::vector<std::pair<double, double> > k_std_time, int n)
-{
+void EpidemicAnalysis::std_time_of_epidemic_over_k(std::vector<std::pair<double, double> > k_std_time, int n) {
     Gnuplot gp;
 
     std::string filename = this->outputDir + "/epidemic_std_time_by_k.gif";
-    
+
     gp << "set title 'Desvio padrão do tempo de epidemia com relação a k\n";
     gp << "set xlabel 'Número de passeios aleatórios' \n";
     gp << "set ylabel 'Desvio padrão' \n";
@@ -470,15 +597,14 @@ void EpidemicAnalysis::std_time_of_epidemic_over_k(std::vector<std::pair<double,
     gp << "set output '" + filename + "' \n";
     gp << "set key bottom right title 'N=" + std::to_string(n) + "' \n";
     //gp << "set logscale y \n";
-    gp << "plot" << gp.file1d(k_std_time) << "title 'desvio padrao' with linespoints lt rgb '#FF0000' \n";   
+    gp << "plot" << gp.file1d(k_std_time) << "title 'desvio padrao' with linespoints lt rgb '#FF0000' \n";
 }
 
-void EpidemicAnalysis::mean_time_of_epidemic_over_n(std::vector<std::pair<double, double> > k_mean_time, int k)
-{
+void EpidemicAnalysis::mean_time_of_epidemic_over_n(std::vector<std::pair<double, double> > k_mean_time, int k) {
     Gnuplot gp;
 
     std::string filename = this->outputDir + "/epidemic_mean_time_by_n.gif";
-    
+
     gp << "set title 'Tempo médio da epidemia com relação a k\n";
     gp << "set xlabel 'Número de passeios aleatórios' \n";
     gp << "set ylabel 'Tempo médio' \n";
@@ -487,15 +613,14 @@ void EpidemicAnalysis::mean_time_of_epidemic_over_n(std::vector<std::pair<double
     gp << "set output '" + filename + "' \n";
     gp << "set key bottom right title 'K=" + std::to_string(k) + "' \n";
     //gp << "set logscale y \n";
-    gp << "plot" << gp.file1d(k_mean_time) << "title 'media' with linespoints lt rgb '#FF0000' \n";   
+    gp << "plot" << gp.file1d(k_mean_time) << "title 'media' with linespoints lt rgb '#FF0000' \n";
 }
 
-void EpidemicAnalysis::std_time_of_epidemic_over_n(std::vector<std::pair<double, double> > k_std_time, int k)
-{
+void EpidemicAnalysis::std_time_of_epidemic_over_n(std::vector<std::pair<double, double> > k_std_time, int k) {
     Gnuplot gp;
 
     std::string filename = this->outputDir + "/epidemic_std_time_by_n.gif";
-    
+
     gp << "set title 'Desvio padrão do tempo de epidemia com relação a k\n";
     gp << "set xlabel 'Número de passeios aleatórios' \n";
     gp << "set ylabel 'Desvio padrão' \n";
@@ -504,15 +629,14 @@ void EpidemicAnalysis::std_time_of_epidemic_over_n(std::vector<std::pair<double,
     gp << "set output '" + filename + "' \n";
     gp << "set key bottom right title 'K=" + std::to_string(k) + "' \n";
     //gp << "set logscale y \n";
-    gp << "plot" << gp.file1d(k_std_time) << "title 'desvio padrao' with linespoints lt rgb '#FF0000' \n";   
+    gp << "plot" << gp.file1d(k_std_time) << "title 'desvio padrao' with linespoints lt rgb '#FF0000' \n";
 }
 
-void EpidemicAnalysis::mean_time_of_epidemic_over_lambda(std::vector<std::pair<double, double> > k_mean_time, int n)
-{
+void EpidemicAnalysis::mean_time_of_epidemic_over_lambda(std::vector<std::pair<double, double> > k_mean_time, int n) {
     Gnuplot gp;
 
     std::string filename = this->outputDir + "/epidemic_mean_time_by_lambda.gif";
-    
+
     gp << "set title 'Tempo médio da epidemia com relação a k\n";
     gp << "set xlabel 'Número de passeios aleatórios' \n";
     gp << "set ylabel 'Tempo médio' \n";
@@ -521,15 +645,14 @@ void EpidemicAnalysis::mean_time_of_epidemic_over_lambda(std::vector<std::pair<d
     gp << "set output '" + filename + "' \n";
     gp << "set key bottom right title 'N=" + std::to_string(n) + "' \n";
     //gp << "set logscale y \n";
-    gp << "plot" << gp.file1d(k_mean_time) << "title 'media' with linespoints lt rgb '#FF0000' \n";   
+    gp << "plot" << gp.file1d(k_mean_time) << "title 'media' with linespoints lt rgb '#FF0000' \n";
 }
 
-void EpidemicAnalysis::std_time_of_epidemic_over_lambda(std::vector<std::pair<double, double> > k_std_time, int n)
-{
+void EpidemicAnalysis::std_time_of_epidemic_over_lambda(std::vector<std::pair<double, double> > k_std_time, int n) {
     Gnuplot gp;
 
     std::string filename = this->outputDir + "/epidemic_std_time_by_lambda.gif";
-    
+
     gp << "set title 'Desvio padrão do tempo de epidemia com relação a k\n";
     gp << "set xlabel 'Número de passeios aleatórios' \n";
     gp << "set ylabel 'Desvio padrão' \n";
@@ -538,5 +661,5 @@ void EpidemicAnalysis::std_time_of_epidemic_over_lambda(std::vector<std::pair<do
     gp << "set output '" + filename + "' \n";
     gp << "set key bottom right title 'N=" + std::to_string(n) + "' \n";
     //gp << "set logscale y \n";
-    gp << "plot" << gp.file1d(k_std_time) << "title 'desvio padrao' with linespoints lt rgb '#FF0000' \n";   
+    gp << "plot" << gp.file1d(k_std_time) << "title 'desvio padrao' with linespoints lt rgb '#FF0000' \n";
 }
