@@ -11,7 +11,7 @@ Vertex::Vertex() {
 }
 
 Vertex::Vertex(int _rwInf, double _p, int _code, int _kMax, std::string _dirToSave) : rwInfecteds(_rwInf), p(_p), code(_code), kMax(_kMax), dirToSave(_dirToSave) {
-    do_analysis = true;
+    do_analysis = false;
     fileNameTimeResult = dirToSave + "/" + std::to_string(code) + "_vertex_results.txt";
     totalTimeWithInfc = 0.0;
     timeLastNumberinfect = 0.0;

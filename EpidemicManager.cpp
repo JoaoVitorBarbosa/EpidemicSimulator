@@ -4,6 +4,7 @@
  */
 
 #include "EpidemicManager.h"
+#include "omp.h"
 
 EpidemicManager::EpidemicManager() {
     aggregate_time_ms = 0;
@@ -130,9 +131,11 @@ void EpidemicManager::mean_time_epidemic_by_lambda(Params params, std::string st
     std::string fName = Utils::datetime_now_to_string();
     params.OutputDir = params.OutputDir + "/" + fName + "_simluation_by_lambda";
     Utils::createDirectory(params.OutputDir);
-    std::string filename_mean_std_time = params.OutputDir + "/time_std_values.txt";
 
+    std::string filename_mean_std_time = params.OutputDir + "/tempo_medio_fracao_lambda_gama.csv";
     std::ofstream arq;
+    arq.open(filename_mean_std_time, std::ofstream::app);
+    arq << "lambda, gama, lambda/gama, tempo medio, desvio padrao" << std::endl;
 
     for (int i = 0; i < params.Rw.lambda_vector.size(); i++) {
         params.Rw.lambda = params.Rw.lambda_vector[i];
@@ -143,16 +146,17 @@ void EpidemicManager::mean_time_epidemic_by_lambda(Params params, std::string st
             avg_epidemic_time = params.Time;
             std_epidemic_time = 0.012;
         } else
-            start_simulation(params, strParams, true);
+            start_simulation(params, strParams, false);
 
         lambda_mean_time.push_back(std::make_pair(params.Rw.lambda_vector[i], avg_epidemic_time));
         lambda_std_time.push_back(std::make_pair(params.Rw.lambda_vector[i], std_epidemic_time));
 
-        arq.open(filename_mean_std_time, std::ofstream::app);
-        arq << Utils::replace_dot_to_comma(params.Rw.lambda) << ";" << Utils::replace_dot_to_comma(avg_epidemic_time) << ";" << Utils::replace_dot_to_comma(std_epidemic_time) << "\n";
-        arq.close();
+        arq << params.Rw.lambda << ",      " << params.Rw.gama << ",      " << params.Rw.lambda / params.Rw.gama << ",      " << avg_epidemic_time << ",      " << std_epidemic_time << "\n";
+        arq.flush();
     }
 
+    arq.close();
+    
     EpidemicAnalysis * ep = new EpidemicAnalysis(params.OutputDir);
     ep->params = params;
     ep->mean_time_of_epidemic_over_n(lambda_mean_time, K);
@@ -170,7 +174,8 @@ void EpidemicManager::measure_scalability_by_random_walks(Params params, std::st
     std::string mean_time_file = params.OutputDir + "/scalability_by_k.txt";
 
     std::ofstream arq;
-
+    arq.open(mean_time_file, std::ofstream::app);
+    
     for (int i = 0; i < params.KS_vector.size(); i++) {
         params.Rw.k = params.KS_vector[i];
         params.Rw.ki = params.Rw.kiPer * params.Rw.k < 1 ? 1 : params.Rw.kiPer * params.Rw.k;
@@ -184,10 +189,12 @@ void EpidemicManager::measure_scalability_by_random_walks(Params params, std::st
         mean_time.push_back(std::make_pair(params.Rw.k, m_duration));
         TimeStatistics stats = duration_standard_desviation(means_dur_execution, mean_duration);
 
-        arq.open(mean_time_file, std::ofstream::app);
+        
         arq << params.Rw.k << "," << m_duration << "," << stats.std / 1000.0 << "," << avg_epidemic_time << "\n";
-        arq.close();
+        arq.flush();
     }
+    
+    arq.close();
 }
 
 void EpidemicManager::measure_scalability_by_vertices(Params params, std::string strParams) {
@@ -197,9 +204,12 @@ void EpidemicManager::measure_scalability_by_vertices(Params params, std::string
     std::string fName = Utils::datetime_now_to_string();
     params.OutputDir = params.OutputDir + "/" + fName + "_scalability_by_vertices_" + std::to_string(params.Time) + "_" + std::to_string(params.Graph.n) + "_" + std::to_string(params.Rw.k) + "_" + std::to_string(params.Rw.ki) + "_" + std::to_string(params.Rw.kiPer) + "_" + std::to_string(params.Rw.lambda) + "_" + std::to_string(params.Rw.gama) + "_" + std::to_string(params.Runs);
     Utils::createDirectory(params.OutputDir);
-    std::string mean_time_file = params.OutputDir + "/scalability_by_vertices.txt";
+    std::string mean_time_file = params.OutputDir + "/scalability_by_vertices.csv";
 
     std::ofstream arq;
+    arq.open(mean_time_file, std::ofstream::app);
+
+    arq << "n,duracao(segundos),desvio padrao,tempo de simulacao" << std::endl;
 
     for (int i = 0; i < params.Graph.NS_vector.size(); i++) {
         params.Graph.n = params.Graph.NS_vector[i];
@@ -214,10 +224,10 @@ void EpidemicManager::measure_scalability_by_vertices(Params params, std::string
         mean_time.push_back(std::make_pair(params.Graph.n, m_duration));
         TimeStatistics stats = duration_standard_desviation(means_dur_execution, mean_duration);
 
-        arq.open(mean_time_file, std::ofstream::app);
-        arq << params.Graph.n << "," << m_duration << "," << stats.std / 1000.0 << "," << avg_epidemic_time << "\n";
-        arq.close();
+        arq << params.Graph.n << ",     " << m_duration << ",     " << stats.std / 1000.0 << ",     " << avg_epidemic_time << "\n";
+        arq.flush();
     }
+    arq.close();
 }
 
 void EpidemicManager::measure_scalability_by_time(Params params, std::string strParams) {
@@ -321,15 +331,15 @@ void EpidemicManager::start_simulation(Params params, std::string strParams, boo
 
     arq.close();
 
-    //if (do_analysis) {
+    if (do_analysis) {
         Logger::Trace("Infected avg over time");
         std::string analysisDir = params.OutputDir;
         EpidemicAnalysis * ep = new EpidemicAnalysis(analysisDir);
         ep->params = params;
-        ep->infected_in_time_in_runs(params.Runs, params.OutputDir);
+        ep->infected_in_time_in_runs(params.Runs, params.OutputDir, params.Time, params.Rw.k);
 
         delete ep;
-    //}
+    }
 }
 
 void EpidemicManager::run_simulation_in_thread(Params params, std::string strParams, ManipulaGrafoV graph, int run) {
@@ -387,24 +397,26 @@ void EpidemicManager::run_simulation_in_thread(Params params, std::string strPar
         EpidemicAnalysis * ep = new EpidemicAnalysis(analysisDir);
         ep->params = params;
         ep->stateDistribution(sim->fileNameInfectInterval, sim->fileNameContractedInterval, sim->fileNameSusceptibleInterval, "System");
-        ep->randomWalkStateTimeSeries(sim->fileNameNumberRandomWalkStates);
+        ep->randomWalkStateTimeSeries(sim->fileNameNumberRandomWalkStates, sim->k, sim->limit_time_epidemic);
 
         ep->outputDir = analysisDir + "/RandomWalks";
         Utils::createDirectory(ep->outputDir);
-        for (int i = 0; i < sim->randomWalks.size(); i++) {
+        Logger::Trace("Substituir de volta i para  sim->randomWalks.size()");
+        for (int i = 0; i < 1; i++) {
             ep->getRandomWalkCCDFAndStatistics(sim->randomWalks.at(i)->file_name_sample_results, std::to_string(i), sim->randomWalks.at(i)->gama, sim->randomWalks.at(i)->tau);
             ep->RandomWalkWalkingCCDF(sim->randomWalks.at(i)->file_name_walking_times, std::to_string(i), sim->randomWalks.at(i)->lambda);
         }
-
+/*
         ep->outputDir = analysisDir + "/Vertices";
         Utils::createDirectory(ep->outputDir);
+         */
 
         // CONTRACTED AND SUSCEPTIBLE NOT CREATED FOR VERTICES
         //for (int i = 0; i < sim->vertices.size(); i++)
-//            ep->stateDistribution(sim->vertices.at(i)->fileNameTimeResult,  std::to_string(i));
+        //            ep->stateDistribution(sim->vertices.at(i)->fileNameTimeResult,  std::to_string(i));
 
-        ep->outputDir = sim->outputDir + "/Analysis";
-        ep->getSystemCCDFAndStatistics(sim->outputDir + "/RandomWalks", sim->k);
+        //ep->outputDir = sim->outputDir + "/Analysis";
+        //ep->getSystemCCDFAndStatistics(sim->outputDir + "/RandomWalks", sim->k);
 
         delete ep;
     }

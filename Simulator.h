@@ -37,7 +37,6 @@ class Simulator {
     int num_Infected;
     int num_Contracted;
     int num_Inf_Events;
-    int limit_time_epidemic;
     int rounds;
     bool continue_simulation_after_epidemic;
     double time_of_last_number_of_infected;
@@ -80,6 +79,7 @@ class Simulator {
     void write_infected_density();
     
 public:
+    int limit_time_epidemic;
     double time;
     std::list<std::pair<double, int> > infected_time;
     // Number of infected Random Walks

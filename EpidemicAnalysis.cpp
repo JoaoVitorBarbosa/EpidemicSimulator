@@ -84,28 +84,28 @@ void EpidemicAnalysis::createStateStatisticsAndCCDF(std::vector<std::pair<double
     if (do_validation) {
         //gp << "set title 'CCDF tempo gasto no estado infectado' \n";
         gp << "set encoding utf8 \n";
-        gp << "set xlabel 'Intervalo de tempo no estado Infectado' font 'Helvetica,16' \n";
-        gp << "set ylabel 'P[t>=T]' font 'Helvetica,16' \n";
+        gp << "set xlabel 'Tempo de permanência no estado Infectado' font 'Helvetica,18' \n";
+        gp << "set ylabel 'P[T>=t]' font 'Helvetica,18' \n";
         gp << "set term png \n";
         gp << "set output '" + this->outputDir + "/" + prefix + "CCDFInfectado.png" + "' \n";
         gp << "set grid \n";
         gp << "set logscale y \n";
-        gp << "plot" << gp.file1d(infectedsPts) << "title 'Empírico' with lines lt rgb '#00FF00', exp(-" + std::to_string(gama) + "*x) title 'Estatístico' with lines lt rgb '#FF0000' \n";
+        gp << "plot" << gp.file1d(infectedsPts) << "title 'Amostral' with lines lt rgb '#00FF00', exp(-" + std::to_string(gama) + "*x) title 'Estatístico' with lines lt rgb '#FF0000' \n";
 
         //gp << "set title 'CCDF tempo gasto no estado contraido' \n";
         gp << "set encoding utf8 \n";
-        gp << "set xlabel 'Intervalo de tempo no estado contraído' font 'Helvetica,16' \n";
-        gp << "set ylabel 'P[t>=T]' font 'Helvetica,16' \n";
+        gp << "set xlabel 'Tempo de permanência  no estado contraído' font 'Helvetica,18' \n";
+        gp << "set ylabel 'P[T>=t]' font 'Helvetica,18' \n";
         gp << "set term png \n";
         gp << "set output '" + this->outputDir + "/" + prefix + "_CCDFContraido.png" + "' \n";
         gp << "set grid \n";
         gp << "set logscale y \n";
-        gp << "plot" << gp.file1d(contractedsPts) << "title 'Empírico' with lines lt rgb '#00FF00', exp(-" + std::to_string(tau) + "*x) title 'Estatístico' with lines lt rgb '#FF0000' \n";
+        gp << "plot" << gp.file1d(contractedsPts) << "title 'Amostral' with lines lt rgb '#00FF00', exp(-" + std::to_string(tau) + "*x) title 'Estatístico' with lines lt rgb '#FF0000' \n";
 
         //gp << "set title 'CCDF tempo gasto no estado \n";
         gp << "set encoding utf8 \n";
-        gp << "set xlabel 'Intervalo de tempo no estado epidêmico' font 'Helvetica,16' \n";
-        gp << "set ylabel 'P[t>=T]' font 'Helvetica,16' \n";
+        gp << "set xlabel 'Tempo de permanência  no estado epidêmico' font 'Helvetica,18' \n";
+        gp << "set ylabel 'P[T>=t]' font 'Helvetica,18' \n";
         gp << "set term png \n";
         gp << "set output '" + filename + "' \n";
         gp << "set grid \n";
@@ -287,26 +287,37 @@ void EpidemicAnalysis::RandomWalkWalkingCCDF(std::string filepath, std::string r
 
         //gp << "set title 'CCDF do tempo de caminhada\n";
         gp << "set encoding utf8 \n";
-        gp << "set xlabel 'Intervalo de tempo no vértice' font 'Helvetica,16' \n";
-        gp << "set ylabel 'P[t>=T]' font 'Helvetica,16' \n";
+        gp << "set xlabel 'Tempo de permanência no vértice' font 'Helvetica,16' \n";
+        gp << "set ylabel 'P[t>=T]' font 'Helvetica,18' \n";
         gp << "set term png \n";
         gp << "set grid \n";
         gp << "set output '" + filename + "' \n";
         gp << "set logscale y \n";
 
-        gp << "plot" << gp.file1d(walkingPts) << "title 'Empírico' with lines lt rgb '#00FF00', exp(-" + std::to_string(lambda) + "*x) title 'Estatístico' with lines lt rgb '#FF0000' \n";
+        gp << "plot" << gp.file1d(walkingPts) << "title 'Amostral' with lines lt rgb '#00FF00', exp(-" + std::to_string(lambda) + "*x) title 'Estatístico' with lines lt rgb '#FF0000' \n";
 
-        gp << "plot" << gp.file1d(walkingPts) << "title 'empiric' with lines lt rgb '#00FF00 \n'";
+        //gp << "plot" << gp.file1d(walkingPts) << "title 'empiric' with lines lt rgb '#00FF00 \n'";
     }
 
 }
 
-void EpidemicAnalysis::randomWalkStateTimeSeries(std::string arquivo) {
+void EpidemicAnalysis::randomWalkStateTimeSeries(std::string arquivo, int k, int time_total) {
 
+    Logger::Trace("Gerando fração de indivíduos em cada estado");
+    
     std::vector<std::pair<double, int> > infecteds;
     std::vector<std::pair<double, int> > contracteds;
     std::vector<std::pair<double, int> > susceptibles;
 
+    std::string file_frac_infec = this->outputDir + "/frac_infected.csv";
+    std::string file_frac_cont = this->outputDir + "/frac_contracted.csv";
+    std::string file_frac_sus = this->outputDir + "/frac_susceptible.csv";
+    
+    std::ofstream arq_inf, arq_cont, arq_sus;
+    arq_inf.open(file_frac_infec, std::ofstream::out | std::ofstream::app);
+    arq_cont.open(file_frac_cont, std::ofstream::out | std::ofstream::app);
+    arq_sus.open(file_frac_sus, std::ofstream::out | std::ofstream::app);
+    
     std::ifstream arq;
     arq.open(arquivo.c_str());
 
@@ -345,43 +356,60 @@ void EpidemicAnalysis::randomWalkStateTimeSeries(std::string arquivo) {
             i++;
         }
 
+//        Logger::Trace("Time: " + std::to_string(time));
+//        Logger::Trace("Fração inf: " + std::to_string(inf/(double)k));
+//        Logger::Trace("Fração cont: " + std::to_string(cont/(double)k));
+//        Logger::Trace("Fração sus: " + std::to_string(sus/(double)k));
+        
+        arq_inf << time << ",      " << inf/(double)k << std::endl;
+        arq_cont << time << ",      " << cont/(double)k << std::endl;
+        arq_sus << time << ",      " << sus/(double)k << std::endl;
+        
         infecteds.push_back(std::make_pair(time, inf));
         contracteds.push_back(std::make_pair(time, cont));
         susceptibles.push_back(std::make_pair(time, sus));
     }
 
+    arq_inf.close();
+    arq_cont.close();
+    arq_sus.close();
     arq.close();
-
-    max = max + 1;
 
     std::string filename = this->outputDir + "/rwStateTimeSeries.png";
 
     Gnuplot gp;
     gp << "set title '' \n";
-    gp << "set xlabel 'Time' \n";
-    gp << "set ylabel 'Number of RW' \n";
-    //gp << "set xrange [0:" + std::to_string(max + 10) + "]\n";
+    gp << "set xlabel 't' \n";
+    gp << "set ylabel 'Fracaoo de individuos' \n";
+    gp << "set xrange [0:" + std::to_string(time_total) + "]\n";
+    gp << "set yrange [0:" + std::to_string(k) + "]\n";
     gp << "set term png \n";
     gp << "set output '" + filename + "' \n";
     gp << "set terminal png medium size 1400,900 \n";
-    gp << "set yrange [0:" + std::to_string(max) + "]\n";
-    gp << "plot '-' title 'Susceptible' with lines lt rgb '#00FF00', '-' title 'Contracted' with lines lt rgb '#0000FF', '-' title 'Infected' with lines lt rgb '#FF0000' \n";
+    gp << "plot '-' title 'Suscetivel' with lines lt rgb '#00FF00', '-' title 'Contraido' with lines lt rgb '#0000FF', '-' title 'Infectado' with lines lt rgb '#FF0000' \n";
 
     gp.send1d(susceptibles);
     gp.send1d(contracteds);
     gp.send1d(infecteds);
 
+    Logger::Trace("End");
 }
 
-void EpidemicAnalysis::infected_in_time_in_runs(int runs, std::string output) {
-    std::string file_path = outputDir + "/infected_over_time.csv";
-    std::vector<std::pair<double, int> > infecteds_1;
-    std::vector<std::pair<double, int> > infecteds_avg;
+void EpidemicAnalysis::infected_in_time_in_runs(int runs, std::string output, int time, int k) {
+    Logger::Trace("Begin: Fração média de indivíduos em cada estado");
+    
+    std::string file_path = outputDir + "/fracao_estado_no_tempo.csv";
+    std::vector<std::pair<double, double> > infecteds_1;
+    std::vector<std::pair<double, double> > infecteds_avg;
+    std::vector<std::pair<double, double> > contracted_avg;
+    std::vector<std::pair<double, double> > susceptible_avg;
 
     for (int round = 0; round < runs; round++) {
         std::string file_input = output + "/Round " + std::to_string(round) + "/system_results.txt";
-        std::vector<std::pair<double, int> > infecteds_aux;
-
+        std::vector<std::pair<double, double> > infecteds_aux;
+        std::vector<std::pair<double, double> > contracted_aux;
+        std::vector<std::pair<double, double> > susceptible_aux;
+        
         // gets data
         std::ifstream arq;
         arq.open(file_input.c_str());
@@ -390,6 +418,8 @@ void EpidemicAnalysis::infected_in_time_in_runs(int runs, std::string output) {
         int max = 0;
         int count_to_avg = 1;
         int sum_inf = 0;
+        int sum_cont = 0;
+        int sum_sus = 0;
         while (!arq.eof()) {
 
             std::string line;
@@ -424,22 +454,37 @@ void EpidemicAnalysis::infected_in_time_in_runs(int runs, std::string output) {
             }
 
             sum_inf += inf;
+            sum_cont += cont;
+            sum_sus += sus;
+            
             count_to_avg++;
-            int d = 50;
+            int d = 50; // slote de tempo para fazer a media
             if (count_to_avg % d == 0) {
                 infecteds_aux.push_back(std::make_pair(time, sum_inf / (double) d));
+                contracted_aux.push_back(std::make_pair(time, sum_cont / (double) d));
+                susceptible_aux.push_back(std::make_pair(time, sum_sus / (double) d));
 
                 int index = (count_to_avg / d) - 1;
                 if (infecteds_avg.size() < index + 1)
+                {
                     infecteds_avg.push_back(std::make_pair(time, sum_inf / (double) d));
+                    contracted_avg.push_back(std::make_pair(time, sum_cont / (double) d));
+                    susceptible_avg.push_back(std::make_pair(time, sum_sus / (double) d));
+                }
                 else {
-                    std::pair<double, int> aux = infecteds_avg[index];
+                    std::pair<double, double> aux = infecteds_avg[index];
+                    std::pair<double, double> aux2 = contracted_avg[index];
+                    std::pair<double, double> aux3 = susceptible_avg[index];
                     if (aux.first == 0.0)
                         aux.first = time;
                     infecteds_avg[index] = std::make_pair(aux.first, aux.second + sum_inf / (double) d);
+                    contracted_avg[index] = std::make_pair(aux2.first, aux2.second + sum_cont / (double) d);
+                    susceptible_avg[index] = std::make_pair(aux3.first, aux3.second + sum_sus / (double) d);
                 }
 
                 sum_inf = 0;
+                sum_cont = 0;
+                sum_sus = 0;
             }
         }
 
@@ -450,8 +495,19 @@ void EpidemicAnalysis::infected_in_time_in_runs(int runs, std::string output) {
     }
 
     for (int i = 0; i < infecteds_avg.size(); i++) {
-        std::pair<double, int> aux = infecteds_avg[i];
-        infecteds_avg[i] = std::make_pair(aux.first, aux.second / runs);
+        std::pair<double, double> aux = infecteds_avg[i];
+        infecteds_avg[i] = std::make_pair(aux.first, (aux.second / (double) runs)/ (double) k); // (/runs) média das rodadas 
+        if(i < contracted_avg.size())
+        {
+            aux = contracted_avg[i];
+            contracted_avg[i] = std::make_pair(aux.first, (aux.second / (double) runs)/ (double) k); // (/runs) média das rodadas 
+        }
+        
+        if(i < susceptible_avg.size())
+        {
+            aux = susceptible_avg[i];
+            susceptible_avg[i] = std::make_pair(aux.first, (aux.second / (double) runs)/ (double) k); // (/runs) média das rodadas 
+        }
     }
 
     // remove ruido
@@ -460,15 +516,26 @@ void EpidemicAnalysis::infected_in_time_in_runs(int runs, std::string output) {
 
     std::ofstream arq;
     arq.open(file_path, std::ofstream::out | std::ofstream::app);
-    arq << "#time,uma rodada,media rodadas" << std::endl;
+    arq << "#time,uma rodada infectado,infectado,contradio,suscetivel" << std::endl;
 
     for (int i = 0; i < infecteds_avg.size(); i++) {
-        arq << infecteds_avg[i].first << ",      " << infecteds_1[i].second << ",      " << infecteds_avg[i].second << std::endl;
+        arq << infecteds_avg[i].first << ",      " << infecteds_1[i].second << ",      " << infecteds_avg[i].second;
+        if(i < contracted_avg.size())
+        {
+            arq << ",      " << contracted_avg[i].second;
+        }
+        
+        if(i < susceptible_avg.size())
+        {
+            arq << ",      " << susceptible_avg[i].second;
+        }
+        
+        arq << std::endl;
     }
 
     arq.close();
 
-    std::string filename = this->outputDir + "/infected_over_time_avg.png";
+    std::string filename = this->outputDir + "/fracao_medio_estados.png";
     Gnuplot gp;
     gp << "set encoding utf8 \n";
     gp << "set title '' \n";
@@ -478,14 +545,17 @@ void EpidemicAnalysis::infected_in_time_in_runs(int runs, std::string output) {
     gp << "set term png \n";
     gp << "set output '" + filename + "' \n";
     gp << "set terminal png medium size 1400,900 \n";
-    gp << "set yrange [0:" + std::to_string(60) + "]\n";
-    gp << "set xrange [0:100000]\n";
-    gp << "plot '-' title '1 rodada' with lines lt rgb '#0000FF', '-' title 'Media das rodadas' with lines lw 2 lt rgb '#FF0000' \n";
+    gp << "set yrange [0:1]\n";
+    gp << "set xrange [0:" + std::to_string(time) + "]\n";
+    gp << "plot '-' title 'Infectado' with lines lw 2 lt rgb '#FF0000', '-' title 'Contraido' with lines lw 2 lt rgb '#00FF00', '-' title 'Suscetivel' with lines lw 2 lt rgb '#0000FF' \n";
     //gp << "plot '-' title 'avg' with lines lw 10 lt rgb '#00FF00' \n";
 
-    gp.send1d(infecteds_1);
+    //gp.send1d(infecteds_1);
     gp.send1d(infecteds_avg);
-
+    gp.send1d(contracted_avg);
+    gp.send1d(susceptible_avg);
+    
+    Logger::Trace("End");
 }
 
 void readTimeNumberInfect(std::string filename, std::set<double, int>) {

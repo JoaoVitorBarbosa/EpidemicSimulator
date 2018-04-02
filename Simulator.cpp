@@ -474,7 +474,7 @@ void Simulator::write_infected_density() {
     arq.open(file_infected_density, std::ofstream::out | std::ofstream::app);
 
     for(auto it = infected_density_over_time.begin(); it != infected_density_over_time.end(); ++it)
-        arq << (*it).first << "," << (*it).second << std::endl;
+        arq << (*it).first << ",             " << (*it).second << std::endl;
 
     arq.close();    
     
@@ -535,7 +535,7 @@ void Simulator::process() {
         old_percentual = percentual;
     }
 
-    write_infected_density();
+    //write_infected_density();
 
     //std::cout << "End epidemic" << std::endl;
 
@@ -543,17 +543,17 @@ void Simulator::process() {
 
     // don't write to be fast, checking threshold
     if (do_analysis) {
-        for (int i = 0; i < randomWalks.size(); i++) {
-            randomWalks.at(i)->WriteResults();
-        }
-        
-        for (int i = 0; i < vertices.size(); i++) {
-            vertices.at(i)->writeTimeInfected(0.0);
-        }
-
-        write_infected_intervals();
-        write_contracted_intervals();
-        write_susceptible_intervals();
+//        for (int i = 0; i < randomWalks.size(); i++) {
+//            randomWalks.at(i)->WriteResults();
+//        }
+//        
+//        for (int i = 0; i < vertices.size(); i++) {
+//            vertices.at(i)->writeTimeInfected(0.0);
+//        }
+//
+//        write_infected_intervals();
+//        write_contracted_intervals();
+//        write_susceptible_intervals();
     }
 
 }

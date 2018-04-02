@@ -84,7 +84,7 @@ public:
     
     /// Creates a graphic with the number of random walk in each state over time
     /// \param file (csv) stores snapshot of (time, rw_infec, rw_cont, rw_inf)
-    void randomWalkStateTimeSeries(std::string file);
+    void randomWalkStateTimeSeries(std::string file, int k, int t);
     
     /// Creates graphic distribution of infected, contracted and susceptible times
     /// \param filepathInfected
@@ -102,7 +102,7 @@ public:
     /// Creates graphic with avg number of infected over time.
     /// \param runs
     /// \param file_name
-    void infected_in_time_in_runs(int runs, std::string output);
+    void infected_in_time_in_runs(int runs, std::string output, int time, int k);
     
     void mean_time_of_epidemic_over_k(std::vector<std::pair<double, double> > k_mean_time, int n);
     void std_time_of_epidemic_over_k(std::vector<std::pair<double, double> > k_std_time, int n);
